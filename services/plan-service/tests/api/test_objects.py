@@ -16,7 +16,7 @@ async def test_создание_объекта_возвращает_201_и_locat
     body = response.json()
     assert body["name"] == SAMPLE["name"]
     assert body["status"] == "DRAFT"
-    assert body["current_revision"] == 0
+    assert body["plan_version"] == 0
     assert response.headers["Location"].endswith(body["id"])
 
 

@@ -40,8 +40,8 @@ async def list_objects(
     items, total = await ObjectService(session).list(
         limit=params.limit,
         offset=params.offset,
-        status=status_filter.value if status_filter else None,
-        object_type=object_type.value if object_type else None,
+        status=status_filter,
+        object_type=object_type,
     )
     return Page[ObjectRead].of([ObjectRead.model_validate(o) for o in items], total, params)
 

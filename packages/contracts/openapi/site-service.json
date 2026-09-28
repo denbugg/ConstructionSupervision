@@ -1,0 +1,3625 @@
+{
+  "components": {
+    "schemas": {
+      "AcceptedImage": {
+        "properties": {
+          "camera_code": {
+            "title": "Camera Code",
+            "type": "string"
+          },
+          "captured_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "UTC; null — ждёт ручного ввода",
+            "title": "Captured At"
+          },
+          "captured_at_source": {
+            "description": "EXIF, FILENAME, MANUAL или UNKNOWN",
+            "title": "Captured At Source",
+            "type": "string"
+          },
+          "file": {
+            "title": "File",
+            "type": "string"
+          },
+          "image_id": {
+            "format": "uuid",
+            "title": "Image Id",
+            "type": "string"
+          },
+          "status": {
+            "description": "PENDING — ждёт распознавания, NEEDS_TIME — ждёт времени",
+            "title": "Status",
+            "type": "string"
+          },
+          "time_detail": {
+            "description": "Откуда взято время, словами",
+            "title": "Time Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "image_id",
+          "file",
+          "camera_code",
+          "captured_at",
+          "captured_at_source",
+          "time_detail",
+          "status"
+        ],
+        "title": "AcceptedImage",
+        "type": "object"
+      },
+      "AreaCamera": {
+        "properties": {
+          "camera_code": {
+            "title": "Camera Code",
+            "type": "string"
+          },
+          "camera_id": {
+            "format": "uuid",
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "zone_id": {
+            "format": "uuid",
+            "title": "Zone Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "camera_id",
+          "camera_code",
+          "zone_id"
+        ],
+        "title": "AreaCamera",
+        "type": "object"
+      },
+      "AreaFact": {
+        "properties": {
+          "area": {
+            "description": "Ключ участка `ТИП:Название`",
+            "title": "Area",
+            "type": "string"
+          },
+          "equipment": {
+            "description": "Только классы с count > 0",
+            "items": {
+              "$ref": "#/components/schemas/EquipmentFact"
+            },
+            "title": "Equipment",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/Visibility"
+          },
+          "zone_type": {
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "area",
+          "zone_type",
+          "name",
+          "visibility",
+          "equipment"
+        ],
+        "title": "AreaFact",
+        "type": "object"
+      },
+      "AreaRead": {
+        "properties": {
+          "area": {
+            "description": "Ключ участка `ТИП:Название`",
+            "title": "Area",
+            "type": "string"
+          },
+          "cameras": {
+            "description": "Активные камеры, на которых размечен участок",
+            "items": {
+              "$ref": "#/components/schemas/AreaCamera"
+            },
+            "title": "Cameras",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "description": "Роль типа зоны из enums.yaml: WORK, SERVICE, SAFETY",
+            "title": "Role",
+            "type": "string"
+          },
+          "zone_type": {
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "area",
+          "zone_type",
+          "name",
+          "role",
+          "cameras"
+        ],
+        "title": "AreaRead",
+        "type": "object"
+      },
+      "Body_upload_images_api_v1_site_images_post": {
+        "properties": {
+          "camera_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Code"
+          },
+          "captured_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Время съёмки, если его нет в файле",
+            "title": "Captured At"
+          },
+          "files": {
+            "description": "Снимки: JPEG, PNG, WebP",
+            "items": {
+              "format": "binary",
+              "type": "string"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "files"
+        ],
+        "title": "Body_upload_images_api_v1_site_images_post",
+        "type": "object"
+      },
+      "CameraCreate": {
+        "properties": {
+          "code": {
+            "description": "Он же имя подпапки при пакетной загрузке; в объекте не повторяется",
+            "examples": [
+              "cam-north"
+            ],
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "install_meta": {
+            "description": "Высота подвеса, азимут, ИК-подсветка",
+            "title": "Install Meta",
+            "type": "object"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "По умолчанию совпадает с кодом",
+            "title": "Name"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "code"
+        ],
+        "title": "CameraCreate",
+        "type": "object"
+      },
+      "CameraFact": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "image_ids": {
+            "description": "Распознанные снимки камеры в окне — доказательство там, где рамок нет (D1)",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Image Ids",
+            "type": "array"
+          },
+          "images": {
+            "description": "Распознанные снимки камеры в окне",
+            "title": "Images",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "DARK, BLURRED, OCCLUDED или NO_IMAGES; null — пригоден",
+            "title": "Reason"
+          },
+          "usable": {
+            "description": "Есть ли среди них пригодный кадр",
+            "title": "Usable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "images",
+          "usable",
+          "reason",
+          "image_ids"
+        ],
+        "title": "CameraFact",
+        "type": "object"
+      },
+      "CameraRead": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "install_meta": {
+            "title": "Install Meta",
+            "type": "object"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "reference_image_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Image Id"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "code",
+          "name",
+          "reference_image_id",
+          "install_meta",
+          "is_active"
+        ],
+        "title": "CameraRead",
+        "type": "object"
+      },
+      "CameraState": {
+        "properties": {
+          "camera_id": {
+            "format": "uuid",
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "image_ids": {
+            "description": "Распознанные снимки камеры в окне — доказательство там, где рамок нет (D1)",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Image Ids",
+            "type": "array"
+          },
+          "images": {
+            "description": "Распознанные снимки камеры в окне",
+            "title": "Images",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "DARK, BLURRED, OCCLUDED или NO_IMAGES; null — пригоден",
+            "title": "Reason"
+          },
+          "usable": {
+            "description": "Есть ли среди них пригодный кадр",
+            "title": "Usable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "images",
+          "usable",
+          "reason",
+          "image_ids",
+          "camera_id"
+        ],
+        "title": "CameraState",
+        "type": "object"
+      },
+      "CameraUpdate": {
+        "description": "Частичное изменение. Код не меняется: по нему снимки раскладываются по камерам.",
+        "properties": {
+          "install_meta": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Install Meta"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "reference_image_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Эталонный кадр — снимок этой камеры, на нём размечают зоны",
+            "title": "Reference Image Id"
+          }
+        },
+        "title": "CameraUpdate",
+        "type": "object"
+      },
+      "DetectionRead": {
+        "properties": {
+          "anchor": {
+            "description": "Точка контакта с землёй — по ней выбрана зона",
+            "items": {
+              "type": "number"
+            },
+            "title": "Anchor",
+            "type": "array"
+          },
+          "bbox": {
+            "description": "[x1, y1, x2, y2] в долях 0…1 от размера кадра",
+            "items": {
+              "type": "number"
+            },
+            "title": "Bbox",
+            "type": "array"
+          },
+          "conf": {
+            "title": "Conf",
+            "type": "number"
+          },
+          "displacement": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displacement"
+          },
+          "equipment_class": {
+            "title": "Equipment Class",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "moved": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moved"
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_class",
+          "bbox",
+          "conf",
+          "anchor",
+          "zone_id",
+          "moved",
+          "displacement",
+          "model_version"
+        ],
+        "title": "DetectionRead",
+        "type": "object"
+      },
+      "EquipmentFact": {
+        "properties": {
+          "count": {
+            "description": "Максимум по камерам участка, а не сумма",
+            "title": "Count",
+            "type": "integer"
+          },
+          "equipment_class": {
+            "title": "Equipment Class",
+            "type": "string"
+          },
+          "evidence": {
+            "description": "Детекции, на которых стоит число",
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Сколько из count не сдвинулись с прошлого окна камеры; null — не с чем сравнить",
+            "title": "Static"
+          }
+        },
+        "required": [
+          "equipment_class",
+          "count",
+          "static",
+          "evidence"
+        ],
+        "title": "EquipmentFact",
+        "type": "object"
+      },
+      "Evidence": {
+        "properties": {
+          "camera": {
+            "title": "Camera",
+            "type": "string"
+          },
+          "conf": {
+            "title": "Conf",
+            "type": "number"
+          },
+          "detection_id": {
+            "format": "uuid",
+            "title": "Detection Id",
+            "type": "string"
+          },
+          "image_id": {
+            "format": "uuid",
+            "title": "Image Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "image_id",
+          "detection_id",
+          "camera",
+          "conf"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "FolderImport": {
+        "properties": {
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "path": {
+            "default": "",
+            "description": "Папка внутри IMPORT_DIR; каждая её подпапка — код камеры. Пусто — сам IMPORT_DIR",
+            "examples": [
+              "",
+              "day1"
+            ],
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "title": "FolderImport",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ImageDetail": {
+        "properties": {
+          "camera_id": {
+            "format": "uuid",
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "captured_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captured At"
+          },
+          "captured_at_source": {
+            "title": "Captured At Source",
+            "type": "string"
+          },
+          "detections": {
+            "description": "Рамки техники; пусто до распознавания",
+            "items": {
+              "$ref": "#/components/schemas/DetectionRead"
+            },
+            "title": "Detections",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "exif": {
+            "title": "Exif",
+            "type": "object"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "quality": {
+            "description": "Яркость и размытость от vision-service",
+            "title": "Quality",
+            "type": "object"
+          },
+          "received_at": {
+            "format": "date-time",
+            "title": "Received At",
+            "type": "string"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Окно наблюдения; null — пока нет времени",
+            "title": "Session Id"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StageObservationRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Стадия объекта по снимку"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "description": "Ссылка на S3_PUBLIC_ENDPOINT для браузера или на S3_ENDPOINT при link=internal; живёт S3_PRESIGN_TTL_S",
+            "title": "Url",
+            "type": "string"
+          },
+          "usable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Пригоден ли кадр; null — ещё не распознан",
+            "title": "Usable"
+          },
+          "usable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usable Reason"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "camera_id",
+          "captured_at",
+          "captured_at_source",
+          "session_id",
+          "width",
+          "height",
+          "status",
+          "usable",
+          "usable_reason",
+          "source",
+          "received_at",
+          "url",
+          "exif",
+          "quality",
+          "error",
+          "detections",
+          "stage"
+        ],
+        "title": "ImageDetail",
+        "type": "object"
+      },
+      "ImageRead": {
+        "properties": {
+          "camera_id": {
+            "format": "uuid",
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "captured_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captured At"
+          },
+          "captured_at_source": {
+            "title": "Captured At Source",
+            "type": "string"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "received_at": {
+            "format": "date-time",
+            "title": "Received At",
+            "type": "string"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Окно наблюдения; null — пока нет времени",
+            "title": "Session Id"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "usable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Пригоден ли кадр; null — ещё не распознан",
+            "title": "Usable"
+          },
+          "usable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usable Reason"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "camera_id",
+          "captured_at",
+          "captured_at_source",
+          "session_id",
+          "width",
+          "height",
+          "status",
+          "usable",
+          "usable_reason",
+          "source",
+          "received_at"
+        ],
+        "title": "ImageRead",
+        "type": "object"
+      },
+      "ImageTimeUpdate": {
+        "properties": {
+          "captured_at": {
+            "description": "ISO-8601; без смещения — местное время камеры (`CAMERA_TIMEZONE`)",
+            "examples": [
+              "2026-10-20T12:03:00",
+              "2026-10-20T09:03:00Z"
+            ],
+            "title": "Captured At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "captured_at"
+        ],
+        "title": "ImageTimeUpdate",
+        "type": "object"
+      },
+      "ImportCamera": {
+        "properties": {
+          "code": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "reference_image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Путь снимка в папке загрузки. Пока не используется: эталонным кадром становится первый загруженный снимок камеры",
+            "title": "Reference Image"
+          },
+          "zones": {
+            "items": {
+              "$ref": "#/components/schemas/ImportZone"
+            },
+            "title": "Zones",
+            "type": "array"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "ImportCamera",
+        "type": "object"
+      },
+      "ImportZone": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "polygon": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Polygon",
+            "type": "array"
+          },
+          "zone_type": {
+            "enum": [
+              "PIT",
+              "BUILDING_FOOTPRINT",
+              "PERIMETER",
+              "ENTRY_GATE",
+              "STORAGE",
+              "DANGER",
+              "ROAD"
+            ],
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "zone_type",
+          "polygon"
+        ],
+        "title": "ImportZone",
+        "type": "object"
+      },
+      "IntakeResult": {
+        "description": "Частичный успех: отклонённый файл — строка в `rejected`, а не ошибка запроса.",
+        "properties": {
+          "accepted": {
+            "items": {
+              "$ref": "#/components/schemas/AcceptedImage"
+            },
+            "title": "Accepted",
+            "type": "array"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedImage"
+            },
+            "title": "Rejected",
+            "type": "array"
+          }
+        },
+        "required": [
+          "accepted",
+          "rejected"
+        ],
+        "title": "IntakeResult",
+        "type": "object"
+      },
+      "ObjectAreas": {
+        "properties": {
+          "areas": {
+            "items": {
+              "$ref": "#/components/schemas/AreaRead"
+            },
+            "title": "Areas",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "zones_version": {
+            "description": "Сумма версий всех зон объекта, включая неактивные: растёт при любой правке",
+            "title": "Zones Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "object_id",
+          "zones_version",
+          "areas"
+        ],
+        "title": "ObjectAreas",
+        "type": "object"
+      },
+      "Page_CameraRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CameraRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[CameraRead]",
+        "type": "object"
+      },
+      "Page_ImageRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ImageRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ImageRead]",
+        "type": "object"
+      },
+      "Page_SessionRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SessionRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[SessionRead]",
+        "type": "object"
+      },
+      "Page_ZoneRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ZoneRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ZoneRead]",
+        "type": "object"
+      },
+      "PeriodFacts": {
+        "description": "Факты за период [from, to) по началу окна: только окна с распознанными снимками.",
+        "properties": {
+          "from": {
+            "format": "date-time",
+            "title": "From",
+            "type": "string"
+          },
+          "model_versions": {
+            "description": "Версии детектора, давшие детекции периода",
+            "items": {
+              "type": "string"
+            },
+            "title": "Model Versions",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "pending_images": {
+            "description": "Ещё не распознанные снимки периода; > 0 — факты неполные",
+            "title": "Pending Images",
+            "type": "integer"
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/WindowFact"
+            },
+            "title": "Sessions",
+            "type": "array"
+          },
+          "to": {
+            "format": "date-time",
+            "title": "To",
+            "type": "string"
+          },
+          "zones_version": {
+            "description": "Счётчик правок зон объекта",
+            "title": "Zones Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "object_id",
+          "from",
+          "to",
+          "zones_version",
+          "model_versions",
+          "pending_images",
+          "sessions"
+        ],
+        "title": "PeriodFacts",
+        "type": "object"
+      },
+      "ReanalyzeRequest": {
+        "properties": {
+          "camera_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Только снимки этой камеры",
+            "title": "Camera Id"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "title": "ReanalyzeRequest",
+        "type": "object"
+      },
+      "ReanalyzeResult": {
+        "properties": {
+          "images": {
+            "description": "Сколько распознанных и отказных снимков снова в PENDING",
+            "title": "Images",
+            "type": "integer"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "images"
+        ],
+        "title": "ReanalyzeResult",
+        "type": "object"
+      },
+      "ReapplyQueued": {
+        "properties": {
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "queued": {
+            "description": "Пересчёт поставлен в очередь site-worker",
+            "title": "Queued",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "object_id",
+          "queued"
+        ],
+        "title": "ReapplyQueued",
+        "type": "object"
+      },
+      "RejectedImage": {
+        "properties": {
+          "code": {
+            "description": "IMAGE_ALREADY_EXISTS, IMAGE_TOO_LARGE, UNSUPPORTED_MEDIA_TYPE, CAMERA_REQUIRED, STORAGE_UNAVAILABLE",
+            "title": "Code",
+            "type": "string"
+          },
+          "file": {
+            "title": "File",
+            "type": "string"
+          },
+          "image_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Для повтора — id уже загруженного",
+            "title": "Image Id"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file",
+          "code",
+          "message"
+        ],
+        "title": "RejectedImage",
+        "type": "object"
+      },
+      "SessionDetail": {
+        "description": "Окно целиком: камеры и пригодность кадров, факт окна, все его снимки.",
+        "properties": {
+          "areas": {
+            "items": {
+              "$ref": "#/components/schemas/AreaFact"
+            },
+            "title": "Areas",
+            "type": "array"
+          },
+          "camera_count": {
+            "title": "Camera Count",
+            "type": "integer"
+          },
+          "cameras": {
+            "items": {
+              "$ref": "#/components/schemas/CameraState"
+            },
+            "title": "Cameras",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "image_count": {
+            "description": "Снимки окна в любом статусе",
+            "title": "Image Count",
+            "type": "integer"
+          },
+          "images": {
+            "description": "Снимки окна в любом статусе, по времени съёмки",
+            "items": {
+              "$ref": "#/components/schemas/ImageRead"
+            },
+            "title": "Images",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "outside_zones": {
+            "items": {
+              "$ref": "#/components/schemas/EquipmentFact"
+            },
+            "title": "Outside Zones",
+            "type": "array"
+          },
+          "stage_conf": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Conf"
+          },
+          "stage_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Label"
+          },
+          "stage_observation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StageFact"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "window_end": {
+            "format": "date-time",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "format": "date-time",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "window_start",
+          "window_end",
+          "image_count",
+          "camera_count",
+          "stage_label",
+          "stage_conf",
+          "updated_at",
+          "cameras",
+          "stage_observation",
+          "areas",
+          "outside_zones",
+          "images"
+        ],
+        "title": "SessionDetail",
+        "type": "object"
+      },
+      "SessionRead": {
+        "properties": {
+          "camera_count": {
+            "title": "Camera Count",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "image_count": {
+            "description": "Снимки окна в любом статусе",
+            "title": "Image Count",
+            "type": "integer"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "stage_conf": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Conf"
+          },
+          "stage_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Label"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "window_end": {
+            "format": "date-time",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "format": "date-time",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "window_start",
+          "window_end",
+          "image_count",
+          "camera_count",
+          "stage_label",
+          "stage_conf",
+          "updated_at"
+        ],
+        "title": "SessionRead",
+        "type": "object"
+      },
+      "StageFact": {
+        "properties": {
+          "conf": {
+            "title": "Conf",
+            "type": "number"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Сумма уверенности по меткам за окно",
+            "title": "Scores",
+            "type": "object"
+          },
+          "stage_label": {
+            "title": "Stage Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage_label",
+          "conf",
+          "scores"
+        ],
+        "title": "StageFact",
+        "type": "object"
+      },
+      "StageObservationRead": {
+        "properties": {
+          "conf": {
+            "title": "Conf",
+            "type": "number"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Scores",
+            "type": "object"
+          },
+          "stage_label": {
+            "title": "Stage Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage_label",
+          "conf",
+          "scores"
+        ],
+        "title": "StageObservationRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Visibility": {
+        "properties": {
+          "cameras_total": {
+            "title": "Cameras Total",
+            "type": "integer"
+          },
+          "cameras_usable": {
+            "title": "Cameras Usable",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Главная причина непригодности для PARTIAL и BLIND",
+            "title": "Reason"
+          },
+          "status": {
+            "description": "OK — все камеры участка, PARTIAL — часть, BLIND — ни одна",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "cameras_total",
+          "cameras_usable",
+          "reason"
+        ],
+        "title": "Visibility",
+        "type": "object"
+      },
+      "WindowFact": {
+        "properties": {
+          "areas": {
+            "description": "Все участки объекта, даже пустые и невидимые",
+            "items": {
+              "$ref": "#/components/schemas/AreaFact"
+            },
+            "title": "Areas",
+            "type": "array"
+          },
+          "cameras": {
+            "description": "Все активные камеры объекта",
+            "items": {
+              "$ref": "#/components/schemas/CameraFact"
+            },
+            "title": "Cameras",
+            "type": "array"
+          },
+          "outside_zones": {
+            "description": "Детекции вне всех зон",
+            "items": {
+              "$ref": "#/components/schemas/EquipmentFact"
+            },
+            "title": "Outside Zones",
+            "type": "array"
+          },
+          "session_id": {
+            "format": "uuid",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "stage_observation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StageFact"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updated_at": {
+            "description": "Когда факт окна пересчитан последний раз",
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "window_end": {
+            "format": "date-time",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "format": "date-time",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "window_start",
+          "window_end",
+          "updated_at",
+          "cameras",
+          "stage_observation",
+          "areas",
+          "outside_zones"
+        ],
+        "title": "WindowFact",
+        "type": "object"
+      },
+      "ZoneCreate": {
+        "properties": {
+          "camera_id": {
+            "format": "uuid",
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Название участка; по умолчанию — название типа из enums.yaml («Котлован»). Одинаковые тип и название на разных камерах — один участок",
+            "title": "Name"
+          },
+          "polygon": {
+            "examples": [
+              [
+                [
+                  0.09,
+                  0.47
+                ],
+                [
+                  0.3,
+                  0.43
+                ],
+                [
+                  0.33,
+                  0.68
+                ],
+                [
+                  0.08,
+                  0.71
+                ]
+              ]
+            ],
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Polygon",
+            "type": "array"
+          },
+          "zone_type": {
+            "enum": [
+              "PIT",
+              "BUILDING_FOOTPRINT",
+              "PERIMETER",
+              "ENTRY_GATE",
+              "STORAGE",
+              "DANGER",
+              "ROAD"
+            ],
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "camera_id",
+          "zone_type",
+          "polygon"
+        ],
+        "title": "ZoneCreate",
+        "type": "object"
+      },
+      "ZoneRead": {
+        "properties": {
+          "area": {
+            "description": "Ключ участка `ТИП:Название`",
+            "readOnly": true,
+            "title": "Area",
+            "type": "string"
+          },
+          "camera_id": {
+            "format": "uuid",
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "polygon": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Polygon",
+            "type": "array"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "zone_type": {
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "camera_id",
+          "zone_type",
+          "name",
+          "polygon",
+          "version",
+          "is_active",
+          "area"
+        ],
+        "title": "ZoneRead",
+        "type": "object"
+      },
+      "ZoneUpdate": {
+        "description": "Правка полигона, типа или названия; `is_active: true` возвращает зону. Версия растёт.",
+        "properties": {
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "polygon": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Polygon"
+          },
+          "zone_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PIT",
+                  "BUILDING_FOOTPRINT",
+                  "PERIMETER",
+                  "ENTRY_GATE",
+                  "STORAGE",
+                  "DANGER",
+                  "ROAD"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Type"
+          }
+        },
+        "title": "ZoneUpdate",
+        "type": "object"
+      },
+      "ZonesImport": {
+        "description": "Формат `data/seed/cameras.json` (data/README.md) плюс объект, к которому он относится.",
+        "properties": {
+          "cameras": {
+            "items": {
+              "$ref": "#/components/schemas/ImportCamera"
+            },
+            "minItems": 1,
+            "title": "Cameras",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "cameras"
+        ],
+        "title": "ZonesImport",
+        "type": "object"
+      },
+      "ZonesImportResult": {
+        "properties": {
+          "areas": {
+            "items": {
+              "$ref": "#/components/schemas/AreaRead"
+            },
+            "title": "Areas",
+            "type": "array"
+          },
+          "cameras_created": {
+            "title": "Cameras Created",
+            "type": "integer"
+          },
+          "cameras_updated": {
+            "title": "Cameras Updated",
+            "type": "integer"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "zones_created": {
+            "title": "Zones Created",
+            "type": "integer"
+          },
+          "zones_deactivated": {
+            "title": "Zones Deactivated",
+            "type": "integer"
+          },
+          "zones_unchanged": {
+            "title": "Zones Unchanged",
+            "type": "integer"
+          },
+          "zones_updated": {
+            "title": "Zones Updated",
+            "type": "integer"
+          },
+          "zones_version": {
+            "description": "Сумма версий всех зон объекта, включая неактивные: растёт при любой правке",
+            "title": "Zones Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "object_id",
+          "zones_version",
+          "areas",
+          "cameras_created",
+          "cameras_updated",
+          "zones_created",
+          "zones_updated",
+          "zones_deactivated",
+          "zones_unchanged"
+        ],
+        "title": "ZonesImportResult",
+        "type": "object"
+      },
+      "ZonesReapply": {
+        "properties": {
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "title": "ZonesReapply",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Сервис площадки: камеры, зоны, снимки, сессии наблюдения, детекции техники. Единственный владелец фактических данных о стройке.",
+    "title": "site-service",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/site/cameras": {
+      "get": {
+        "operationId": "list_cameras_api_v1_site_cameras_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "is_active",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Active"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_CameraRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Камеры",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      },
+      "post": {
+        "description": "Код в объекте не повторяется (`CAMERA_ALREADY_EXISTS`). При загрузке папки снимков камеры заводятся сами по именам подпапок.",
+        "operationId": "create_camera_api_v1_site_cameras_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CameraCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Завести камеру",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/api/v1/site/cameras/{camera_id}": {
+      "delete": {
+        "description": "Камера и её зоны не удаляются: на них ссылаются снимки и детекции.",
+        "operationId": "delete_camera_api_v1_site_cameras__camera_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "camera_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Camera Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Деактивировать камеру",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      },
+      "get": {
+        "operationId": "get_camera_api_v1_site_cameras__camera_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "camera_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Camera Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Камера",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      },
+      "patch": {
+        "description": "Название, эталонный кадр (снимок этой камеры), параметры установки, активность. `is_active: false` деактивирует и зоны камеры; смена активности пересчитывает факты окон объекта в фоне.",
+        "operationId": "update_camera_api_v1_site_cameras__camera_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "camera_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Camera Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CameraUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить камеру",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/api/v1/site/images": {
+      "get": {
+        "description": "По времени съёмки; снимки без времени — в конце. `from` и `to` — полуинтервал по `captured_at` (ISO-8601).",
+        "operationId": "list_images_api_v1_site_images_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "camera_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Camera Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "NEEDS_TIME",
+                    "PENDING",
+                    "PROCESSING",
+                    "ANALYZED",
+                    "FAILED"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ImageRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Снимки",
+        "tags": [
+          "Снимки"
+        ]
+      },
+      "post": {
+        "description": "До 200 файлов (поле `files`), каждый до `MAX_IMAGE_MB`. Камера — поле `camera_code`, иначе подпапка в имени файла (`cam-north/20261020_090000.jpg`); новая камера заводится сама. Время: EXIF → дата и время в имени файла → поле `captured_at` (ISO-8601; без смещения — местное время камеры, `CAMERA_TIMEZONE`). Без времени снимок принимается со статусом `NEEDS_TIME`. Первый снимок камеры становится её эталонным кадром. Ответ — частичный успех: `accepted` и `rejected`.",
+        "operationId": "upload_images_api_v1_site_images_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_images_api_v1_site_images_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Загрузить снимки пакетом",
+        "tags": [
+          "Снимки"
+        ]
+      }
+    },
+    "/api/v1/site/images/import": {
+      "post": {
+        "description": "Папка `IMPORT_DIR/<path>`: подпапка — код камеры (`cam-north/...`), камеры заводятся сами, скрытые файлы пропускаются. Время: EXIF → дата и время в имени файла → поле `captured_at` (ISO-8601; без смещения — местное время камеры, `CAMERA_TIMEZONE`). Без времени снимок принимается со статусом `NEEDS_TIME`. Первый снимок камеры становится её эталонным кадром. Повторный импорт той же папки отклоняет уже загруженные снимки как `IMAGE_ALREADY_EXISTS`.",
+        "operationId": "import_images_api_v1_site_images_import_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FolderImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Импорт снимков из смонтированной папки",
+        "tags": [
+          "Снимки"
+        ]
+      }
+    },
+    "/api/v1/site/images/reanalyze": {
+      "post": {
+        "description": "После смены модели или её порога: распознанные (`ANALYZED`) и отказные (`FAILED`) снимки объекта — или одной камеры — снова получают `PENDING` и распознаются воркером; факты окон пересчитываются по мере распознавания. Пока идёт повтор, `pending_images` в фактах больше нуля.",
+        "operationId": "reanalyze_images_api_v1_site_images_reanalyze_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReanalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReanalyzeResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Распознать снимки объекта заново",
+        "tags": [
+          "Снимки"
+        ]
+      }
+    },
+    "/api/v1/site/images/{image_id}": {
+      "get": {
+        "description": "Метаданные, ссылка для браузера (`S3_PUBLIC_ENDPOINT`), рамки техники с точкой контакта и зоной, стадия по снимку. `link=internal` — ссылка на внутренний адрес хранилища (`S3_ENDPOINT`) для других сервисов: так снимки берёт отчёт analysis (interservice.md, контракт 6).",
+        "operationId": "get_image_api_v1_site_images__image_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Image Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "link",
+            "required": false,
+            "schema": {
+              "default": "public",
+              "enum": [
+                "public",
+                "internal"
+              ],
+              "title": "Link",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Снимок",
+        "tags": [
+          "Снимки"
+        ]
+      },
+      "patch": {
+        "description": "Только для статуса `NEEDS_TIME` (`IMAGE_TIME_ALREADY_SET` иначе). Снимок получает окно наблюдения и статус `PENDING`, источник времени — `MANUAL`.",
+        "operationId": "set_image_time_api_v1_site_images__image_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Image Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageTimeUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Указать время съёмки вручную",
+        "tags": [
+          "Снимки"
+        ]
+      }
+    },
+    "/api/v1/site/objects/{object_id}/areas": {
+      "get": {
+        "description": "Участок — активные зоны активных камер с одинаковыми типом и названием, ключ `ТИП:Название` (ADR-0013). Плюс `zones_version` объекта.",
+        "operationId": "get_areas_api_v1_site_objects__object_id__areas_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectAreas"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Участки объекта",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/api/v1/site/objects/{object_id}/facts": {
+      "get": {
+        "description": "Межсервисный контракт (interservice.md, раздел 2): окна с распознанными снимками, участки × классы техники (максимум по камерам), видимость участков, стадия по фото. Полуинтервал `[from, to)` по началу окна, ISO-8601 UTC. Нет снимков — `sessions: []`; `from >= to` — `INVALID_PERIOD`.",
+        "operationId": "get_facts_api_v1_site_objects__object_id__facts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "From",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "To",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodFacts"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Факты за период",
+        "tags": [
+          "Факты и окна"
+        ]
+      }
+    },
+    "/api/v1/site/sessions": {
+      "get": {
+        "description": "Сколько снимков и камер в окне, стадия по фото. Полуинтервал `[from, to)` по началу окна, ISO-8601 UTC.",
+        "operationId": "list_sessions_api_v1_site_sessions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_SessionRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Окна наблюдения",
+        "tags": [
+          "Факты и окна"
+        ]
+      }
+    },
+    "/api/v1/site/sessions/{session_id}": {
+      "get": {
+        "description": "Камеры окна и пригодность их кадров, факт окна в форме контракта, все снимки окна в любом статусе.",
+        "operationId": "get_session_api_v1_site_sessions__session_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Окно наблюдения",
+        "tags": [
+          "Факты и окна"
+        ]
+      }
+    },
+    "/api/v1/site/zones": {
+      "get": {
+        "operationId": "list_zones_api_v1_site_zones_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "camera_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Camera Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_inactive",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Inactive",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ZoneRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Зоны",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      },
+      "post": {
+        "description": "Полигон в долях 0…1 от размера кадра, без самопересечений (`INVALID_POLYGON`). Название по умолчанию — название типа из enums.yaml.",
+        "operationId": "create_zone_api_v1_site_zones_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZoneCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Создать зону",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/api/v1/site/zones/import": {
+      "post": {
+        "description": "Формат `data/seed/cameras.json` плюс `object_id`. Камеры сверяются по коду, зоны камеры — по подписи участка: новые создаются, изменённые получают новый полигон, отсутствующие в файле деактивируются. Повторный импорт того же файла ничего не меняет. Ошибки полигонов — по всему файлу, с путём (`INVALID_POLYGON`, `details.errors`). Если разметка поменялась, факты окон объекта пересчитываются в фоне.",
+        "operationId": "import_zones_api_v1_site_zones_import_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZonesImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZonesImportResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Загрузить камеры и зоны из cameras.json",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/api/v1/site/zones/reapply": {
+      "post": {
+        "description": "Заново отнести детекции объекта к активным зонам и пересчитать факты всех его окон — без повторного распознавания; затем сигнал в analysis. Правки зон и камер ставят этот пересчёт сами; вручную он нужен, если очередь была недоступна (`QUEUE_UNAVAILABLE`).",
+        "operationId": "reapply_zones_api_v1_site_zones_reapply_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZonesReapply"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReapplyQueued"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Пересчитать факты по текущим зонам",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/api/v1/site/zones/{zone_id}": {
+      "delete": {
+        "description": "Зона не удаляется: на неё ссылаются детекции. Версия зоны растёт, вместе с ней — `zones_version` объекта; факты окон объекта пересчитываются в фоне без повторного распознавания.",
+        "operationId": "delete_zone_api_v1_site_zones__zone_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Zone Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Деактивировать зону",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      },
+      "get": {
+        "operationId": "get_zone_api_v1_site_zones__zone_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Zone Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Зона",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      },
+      "patch": {
+        "description": "Версия зоны растёт, вместе с ней — `zones_version` объекта; факты окон объекта пересчитываются в фоне без повторного распознавания.",
+        "operationId": "update_zone_api_v1_site_zones__zone_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "zone_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Zone Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZoneUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить зону",
+        "tags": [
+          "Камеры и зоны"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Процесс жив",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Готов обслуживать запросы",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

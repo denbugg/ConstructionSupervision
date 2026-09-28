@@ -1,0 +1,66 @@
+# Русские названия значений перечислений для PDF-отчёта (src/report/).
+#
+# Ключи — значения из packages/contracts/enums.yaml; сами списки значений здесь не
+# повторяются. Значение без строки печатается в отчёте как есть, а не пропадает.
+# Названия типов зон берутся из enums.yaml (zone_type_name), классов техники — из плана.
+
+object_status:
+  ON_TRACK: В графике
+  DELAY: Отставание
+  AHEAD: Опережение
+  UNKNOWN: Недостаточно данных
+
+confidence:
+  LOW: низкая
+  MEDIUM: средняя
+  HIGH: высокая
+
+severity:
+  HIGH: Высокая
+  MEDIUM: Средняя
+  LOW: Низкая
+  INFO: Инфо
+
+stage_fact_status:
+  NOT_STARTED: не начат
+  IN_PROGRESS: в работе
+  DONE: завершён
+  LATE: с опозданием
+  AHEAD: с опережением
+
+deviation_status:
+  NEW: открыто
+  CONFIRMED: подтверждено
+  REJECTED: ложное
+  RESOLVED: закрыто
+
+verdict:
+  CONFIRMED: подтверждено оператором
+  REJECTED: ложное срабатывание
+
+construction_phase:
+  PREPARATORY: Подготовительный период
+  SUBSTRUCTURE: Подземная часть
+  SUPERSTRUCTURE: Надземная часть
+  ENVELOPE_ROOF: Ограждающие конструкции и кровля
+  NETWORKS: Наружные сети
+  LANDSCAPING: Благоустройство
+
+visibility_reason:
+  NO_IMAGES: нет снимков
+  DARK: тёмный кадр
+  BLURRED: размытый кадр
+  OCCLUDED: обзор закрыт
+
+# docs/methodology.md, раздел 9: короткие названия кодов.
+deviation_code:
+  D1: Нет обязательной техники
+  D2: Неполный комплект
+  D3: Техника не по этапу
+  D4: Простой
+  D5: Не та зона
+  D6: Опасная зона
+  D7: Стадия не совпадает
+  D8: Этап затянулся
+  D9: Не начат в срок
+  D10: Вне контроля ИИ

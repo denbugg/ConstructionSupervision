@@ -8,3 +8,9 @@ alembic==1.14.0
 httpx==0.28.1
 structlog==24.4.0
 python-multipart==0.0.20
+minio==7.2.10
+pillow==11.0.0
+pyyaml==6.0.2
+shapely==2.0.6
+arq==0.28.0
+redis==5.3.1

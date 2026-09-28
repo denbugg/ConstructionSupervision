@@ -10,20 +10,25 @@ from lct_common import NotFoundError, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.schemas.objects import ObjectCreate, ObjectUpdate
+from src.config import settings
 from src.dal.models import ConstructionObject
+from src.dal.repositories.calendars import CalendarRepository
 from src.dal.repositories.objects import ObjectRepository
 
 
 class ObjectService:
     def __init__(self, session: AsyncSession) -> None:
         self._repo = ObjectRepository(session)
+        self._calendars = CalendarRepository(session)
 
     async def create(self, payload: ObjectCreate) -> ConstructionObject:
+        # Календарь по умолчанию (DEFAULT_CALENDAR); кода нет в базе — объект без календаря.
+        calendar = await self._calendars.by_code(settings.default_calendar)
         obj = ConstructionObject(
+            calendar_id=calendar.id if calendar else None,
             name=payload.name.strip(),
-            # Тип не указан — до генерации графика считаем объект монолитным жильём:
-            # это самый частый случай АИП Москвы. Распознавание по наименованию
-            # выполнит pos-engine, и значение будет уточнено.
+            # Тип не указан — считаем объект монолитным жильём: это самый частый
+            # случай АИП Москвы и тип демо-объекта. Разбора наименования нет (ADR-0011).
             object_type=payload.object_type or "RESIDENTIAL_MONOLITH",
             address=payload.address,
             plan_start=payload.plan_start,
@@ -49,13 +54,13 @@ class ObjectService:
         obj = await self.get(object_id)
         changes = payload.model_dump(exclude_unset=True)
 
-        if "plan_start" in changes and obj.current_revision > 0:
-            # Сдвиг даты начала после построения графика меняет все вехи,
+        if "plan_start" in changes and obj.plan_version > 0:
+            # Сдвиг даты начала после построения графика меняет все этапы,
             # поэтому выполняется перегенерацией плана, а не правкой поля.
             raise ValidationError(
                 "Дата начала меняется через перегенерацию плана, а не напрямую",
                 object_id=str(object_id),
-                current_revision=obj.current_revision,
+                plan_version=obj.plan_version,
             )
 
         for field, value in changes.items():

@@ -15,6 +15,11 @@ x-python-env: &python-env
   API_KEY: ${API_KEY}
   TZ: ${TZ}
   RUN_MIGRATIONS: ${RUN_MIGRATIONS}
+  CONTRACTS_DIR: ${CONTRACTS_DIR:-/contracts}
+
+# Справочные файлы (классы техники, перечисления) — данные только для чтения,
+# а не канал обмена между сервисами (architecture.md, раздел 6).
+x-contracts-volume: &contracts-volume ./packages/contracts:/contracts:ro
 
 services:
 
@@ -39,18 +44,25 @@ services:
       retries: 20
     networks: [lct]
 
-  minio:
-    image: minio/minio:RELEASE.2024-09-22T00-33-43Z
+  # S3-хранилище снимков и отчётов (ADR-0016): SeaweedFS, всё в одном контейнере. Digest рядом
+  # с тегом — на любой машине скачаются те же байты, даже если тег перевыпустят.
+  s3:
+    image: chrislusf/seaweedfs:4.47@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882
     restart: unless-stopped
-    command: server /data --console-address ":9001"
+    # WebDAV, Iceberg и Lance стеку не нужны: не открываем лишние порты.
+    command: >-
+      mini -dir=/data -webdav=false -s3.port.iceberg=0 -s3.port.lance=0
+      -admin.user=${S3_ACCESS_KEY} -admin.password=${S3_SECRET_KEY}
     environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+      # С ключами SeaweedFS проверяет подпись каждого запроса; без них пускал бы всех.
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
     volumes:
-      - miniodata:/data
-    ports: ["9000:9000", "9001:9001"]
+      - s3data:/data
+    # 8333 — S3 (на него подписываются ссылки для браузера), 23646 — веб-интерфейс администратора.
+    ports: ["8333:8333", "23646:23646"]
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:8333/healthz"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -77,7 +89,7 @@ services:
     environment:
       <<: *python-env
       PLAN_DB_DSN: ${PLAN_DB_DSN}
-      POS_URL: ${POS_URL}
+    volumes: [*contracts-volume]
     ports: ["8001:8000"]
     depends_on:
       postgres:
@@ -98,9 +110,18 @@ services:
     environment:
       <<: *python-env
       SITE_DB_DSN: ${SITE_DB_DSN}
+      IMPORT_DIR: /import
+    volumes:
+      - *contracts-volume
+      # Демо-хронология для POST /images/import: подпапка = код камеры (data/README.md).
+      - ./data/seed/images:/import:ro
     ports: ["8002:8000"]
     depends_on:
       postgres:
+        condition: service_healthy
+      s3:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health/ready')"]
@@ -108,6 +129,31 @@ services:
       timeout: 5s
       retries: 12
       start_period: 20s
+
+  # Воркер распознавания: тот же образ, другой процесс (services/site-service/README.md, раздел 2).
+  # Реплик может быть сколько угодно: снимок забирается в работу одним UPDATE.
+  site-worker:
+    <<: *service-base
+    image: ${IMAGE_REGISTRY:-lct}/site-service:${IMAGE_TAG:-latest}
+    command: ["arq", "src.worker.WorkerSettings"]
+    environment:
+      <<: *python-env
+      SITE_DB_DSN: ${SITE_DB_DSN}
+      # Схему ведёт site-service, воркер ждёт его готовности: две реплики не мигрируют разом.
+      RUN_MIGRATIONS: "false"
+    volumes: [*contracts-volume]
+    depends_on:
+      site-service:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # arq сам пишет отметку живости в Redis; --check читает её.
+      test: ["CMD", "arq", "--check", "src.worker.WorkerSettings"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   analysis-service:
     <<: *service-base
@@ -118,10 +164,17 @@ services:
     environment:
       <<: *python-env
       ANALYSIS_DB_DSN: ${ANALYSIS_DB_DSN}
+    volumes: [*contracts-volume]
     ports: ["8003:8000"]
     depends_on:
       postgres:
         condition: service_healthy
+      # Бакет `reports` для PDF-отчётов (README analysis-service, раздел 5).
+      s3:
+        condition: service_healthy
+    # Локальная LLM на хосте (llama-server, runbook §4): Docker Desktop знает это имя сам,
+    # на Linux его даёт host-gateway.
+    extra_hosts: ["host.docker.internal:host-gateway"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health/ready')"]
       interval: 10s
@@ -135,16 +188,26 @@ services:
     build:
       context: .
       dockerfile: services/vision-service/Dockerfile
+      args:
+        TORCH_INDEX_URL: ${VISION_TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu128}
     environment:
       <<: *python-env
-      VISION_DEVICE: ${VISION_DEVICE}
+      VISION_DEVICE: ${VISION_DEVICE:-cuda}
+    volumes:
+      - *contracts-volume
+      # Веса моделей (python scripts/fetch_models.py), в том числе текстовый энкодер CLIP для
+      # промптов YOLO-World в /models/clip: образ указывает Ultralytics этот каталог.
+      - ./data/models:/models:ro
     ports: ["8004:8000"]
+    # Видеокарту пробрасывает оверлей docker-compose.gpu.yml: без карты на машине запрос
+    # устройства в этом файле не дал бы стеку подняться вовсе.
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health/ready')"]
       interval: 10s
       timeout: 5s
       retries: 12
-      start_period: 20s
+      # Веса грузятся в память и прогреваются: на CPU это до минуты.
+      start_period: 90s
 
   gateway:
     <<: *service-base
@@ -152,16 +215,17 @@ services:
     build:
       context: .
       dockerfile: services/gateway/Dockerfile
-    ports: ["8080:80"]
+    ports: ["${GATEWAY_PORT:-8080}:80"]
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      # 127.0.0.1, а не localhost: в alpine localhost резолвится в ::1, а nginx слушает только IPv4.
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
       interval: 10s
       timeout: 3s
       retries: 6
 
 volumes:
   pgdata:
-  miniodata:
+  s3data:
 
 networks:
   lct:

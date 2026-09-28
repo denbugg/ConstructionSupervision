@@ -1,0 +1,1269 @@
+{
+  "object_id": "0f3a6c1e-8d4b-4c2a-9e71-5b0d2f6a8c31",
+  "from": "2026-10-22T00:00:00Z",
+  "to": "2026-10-23T00:00:00Z",
+  "zones_version": 4,
+  "model_versions": [
+    "yolov8s-worldv2"
+  ],
+  "pending_images": 0,
+  "sessions": [
+    {
+      "session_id": "833cb0fa-7fe3-53e8-9917-92f1e682f6ff",
+      "window_start": "2026-10-22T06:00:00Z",
+      "window_end": "2026-10-22T06:30:00Z",
+      "updated_at": "2026-10-22T06:35:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "3ded6851-6525-5a4d-86fc-58b1666eea50"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "80d3b6cf-38c9-5368-bf58-c6290b0140c5"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "3ded6851-6525-5a4d-86fc-58b1666eea50",
+                  "detection_id": "381e1f01-a5b4-5109-a459-b6e5959b0b8f",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            },
+            {
+              "equipment_class": "dump_truck",
+              "count": 2,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "3ded6851-6525-5a4d-86fc-58b1666eea50",
+                  "detection_id": "36ad2057-2aeb-5183-aaab-bf28e3564561",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                },
+                {
+                  "image_id": "3ded6851-6525-5a4d-86fc-58b1666eea50",
+                  "detection_id": "52fa401a-5773-559e-ac10-4bc5f46c8952",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "3ded6851-6525-5a4d-86fc-58b1666eea50",
+                  "detection_id": "c62104ae-79c8-58d2-bebd-99559bec70ab",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "03a1889a-ecc1-5f41-b503-5445acf758bb",
+      "window_start": "2026-10-22T06:30:00Z",
+      "window_end": "2026-10-22T07:00:00Z",
+      "updated_at": "2026-10-22T07:05:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "583da3e1-c83b-5fc3-b2e7-be130d3b7f17"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "8798e28d-1440-5835-aecd-f254bf91f9a7"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "583da3e1-c83b-5fc3-b2e7-be130d3b7f17",
+                  "detection_id": "6ebc9a4e-10d1-55c4-a238-6f110a5c73f3",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "583da3e1-c83b-5fc3-b2e7-be130d3b7f17",
+                  "detection_id": "4d20b73e-2227-54c4-bf16-63fdeb45b16b",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "f4790b98-2356-5510-9ffd-081ece019e0f",
+      "window_start": "2026-10-22T07:00:00Z",
+      "window_end": "2026-10-22T07:30:00Z",
+      "updated_at": "2026-10-22T07:35:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "f8159aaa-8274-51c7-a563-299201ba719d"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "f00cdd13-5e28-5e0a-ba55-3db6ca512d3e"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "f8159aaa-8274-51c7-a563-299201ba719d",
+                  "detection_id": "c7aafbf4-22b8-5b01-b8f3-4adfd262395b",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "f8159aaa-8274-51c7-a563-299201ba719d",
+                  "detection_id": "ed190df3-41f4-585e-b952-504b5c23824a",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "87d3c98e-57da-5a6a-a310-663480e26fde",
+      "window_start": "2026-10-22T07:30:00Z",
+      "window_end": "2026-10-22T08:00:00Z",
+      "updated_at": "2026-10-22T08:05:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "7199201e-f661-51c3-b258-9feff73380a6"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "b1bdd4e7-a55f-53f8-b6db-615d2823c843"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "7199201e-f661-51c3-b258-9feff73380a6",
+                  "detection_id": "3af1d265-ca60-59fb-b413-9ee7fa36573f",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "7199201e-f661-51c3-b258-9feff73380a6",
+                  "detection_id": "beb3e1b3-68c8-565f-bed4-0efca0df93c5",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "1bc58061-1b1b-524d-bf41-cf56e25fceee",
+      "window_start": "2026-10-22T08:00:00Z",
+      "window_end": "2026-10-22T08:30:00Z",
+      "updated_at": "2026-10-22T08:35:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "e9448fa6-8259-5a81-b502-d16792b0bd6c"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "45be0c55-3a40-5971-9e65-7cedd316c9bf"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "e9448fa6-8259-5a81-b502-d16792b0bd6c",
+                  "detection_id": "7e017156-faff-570f-a530-914e762b2483",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            },
+            {
+              "equipment_class": "dump_truck",
+              "count": 2,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "e9448fa6-8259-5a81-b502-d16792b0bd6c",
+                  "detection_id": "89324cab-15ff-513f-bc4b-345bc0a82245",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                },
+                {
+                  "image_id": "e9448fa6-8259-5a81-b502-d16792b0bd6c",
+                  "detection_id": "6e3ab99e-5fc9-518a-a27e-933a07f31ce5",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "e9448fa6-8259-5a81-b502-d16792b0bd6c",
+                  "detection_id": "5f15b9cb-3789-57d8-b864-f540622fbce6",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "28504f62-74ee-5f0a-80d6-82149a2f8cba",
+      "window_start": "2026-10-22T08:30:00Z",
+      "window_end": "2026-10-22T09:00:00Z",
+      "updated_at": "2026-10-22T09:05:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "d4f1efcf-87e0-5bad-bd54-18abac0d9eeb"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "f7ae97ec-8e5e-5b4d-92c8-51b30d1a6b31"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "d4f1efcf-87e0-5bad-bd54-18abac0d9eeb",
+                  "detection_id": "98ec18c2-b8b5-5682-bcdc-27310de1d1a2",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "d4f1efcf-87e0-5bad-bd54-18abac0d9eeb",
+                  "detection_id": "2720ad9a-49fb-5085-987c-91a92f86685a",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "f0f0e521-c83a-5cd5-86b5-da8fa51bdb70",
+      "window_start": "2026-10-22T09:00:00Z",
+      "window_end": "2026-10-22T09:30:00Z",
+      "updated_at": "2026-10-22T09:35:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "f756fd27-c7fd-5b19-a9bb-b064d08b9a6e"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "9c4f274c-4fca-500e-9ded-1ba99ba82fd6"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "f756fd27-c7fd-5b19-a9bb-b064d08b9a6e",
+                  "detection_id": "87153072-7273-5c16-9685-d7849a2fcdda",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "f756fd27-c7fd-5b19-a9bb-b064d08b9a6e",
+                  "detection_id": "7bd8aa76-e5cc-574b-96ac-89c46bf05a38",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "72f9e9f9-5cbd-5284-91ea-412ad45b5644",
+      "window_start": "2026-10-22T09:30:00Z",
+      "window_end": "2026-10-22T10:00:00Z",
+      "updated_at": "2026-10-22T10:05:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "cb2bb890-7216-5809-bb97-b658a15195ad"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "b1a2766e-dcde-5ac1-894b-e418c67983ce"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "cb2bb890-7216-5809-bb97-b658a15195ad",
+                  "detection_id": "08232aaf-9eb5-5ae8-943a-7f74772dcd66",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "cb2bb890-7216-5809-bb97-b658a15195ad",
+                  "detection_id": "c187a1f7-c7fd-581f-9612-c5e14cb5265b",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "1fd8ad3a-f54f-5c0f-9bfd-1af40ab598ce",
+      "window_start": "2026-10-22T10:00:00Z",
+      "window_end": "2026-10-22T10:30:00Z",
+      "updated_at": "2026-10-22T10:35:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "d0b36c3f-ad54-52b0-bb3a-5596f329892c"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "68a02920-294d-511f-93a8-496fcc9957dc"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "d0b36c3f-ad54-52b0-bb3a-5596f329892c",
+                  "detection_id": "60ff752f-fa5f-52ec-b19c-54af42d29507",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            },
+            {
+              "equipment_class": "dump_truck",
+              "count": 2,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "d0b36c3f-ad54-52b0-bb3a-5596f329892c",
+                  "detection_id": "0762cb6a-5708-5a19-b1e2-097b6229d3a4",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                },
+                {
+                  "image_id": "d0b36c3f-ad54-52b0-bb3a-5596f329892c",
+                  "detection_id": "28feb52a-3e16-5eb7-9348-82d84bbe50ce",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "d0b36c3f-ad54-52b0-bb3a-5596f329892c",
+                  "detection_id": "5280e61f-f91e-592f-865c-352bf79b8857",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "fa32b527-fb5e-59cd-8dfd-6b03215b859b",
+      "window_start": "2026-10-22T10:30:00Z",
+      "window_end": "2026-10-22T11:00:00Z",
+      "updated_at": "2026-10-22T11:05:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "3ada8917-773d-5c62-a674-8e4bae8ad65f"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "27d6d1c3-6f4a-517a-87af-cc20f1c93f13"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "3ada8917-773d-5c62-a674-8e4bae8ad65f",
+                  "detection_id": "56c21de5-6a37-558a-b836-6ef7e7ddbc7f",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "3ada8917-773d-5c62-a674-8e4bae8ad65f",
+                  "detection_id": "54ed5f59-bb4b-5957-9007-b80eea577cb2",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "1d9b7577-1794-5ae2-8a37-61005690a3f8",
+      "window_start": "2026-10-22T11:00:00Z",
+      "window_end": "2026-10-22T11:30:00Z",
+      "updated_at": "2026-10-22T11:35:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "8052b832-3d50-5796-a708-42f8d8da207a"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "4ece11cf-dfc1-5d5d-9b63-cece2d48168d"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "8052b832-3d50-5796-a708-42f8d8da207a",
+                  "detection_id": "926fa3fd-7458-53f5-b57f-1258861afc76",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "8052b832-3d50-5796-a708-42f8d8da207a",
+                  "detection_id": "fbcf692f-71ce-5377-859e-6b9c6686b531",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    },
+    {
+      "session_id": "36f40d3e-11a4-5df7-88e6-1063dc1493ad",
+      "window_start": "2026-10-22T11:30:00Z",
+      "window_end": "2026-10-22T12:00:00Z",
+      "updated_at": "2026-10-22T12:05:00Z",
+      "cameras": [
+        {
+          "code": "cam-north",
+          "images": 1,
+          "usable": true,
+          "reason": null,
+          "image_ids": [
+            "2ffd283b-c026-588d-a9ca-7024ca929415"
+          ]
+        },
+        {
+          "code": "cam-gate",
+          "images": 1,
+          "usable": false,
+          "reason": "DARK",
+          "image_ids": [
+            "5bfcced4-8d8d-5e79-82f0-916f0a656408"
+          ]
+        }
+      ],
+      "stage_observation": {
+        "stage_label": "PIT",
+        "conf": 0.78,
+        "scores": {
+          "PIT": 0.78
+        }
+      },
+      "areas": [
+        {
+          "area": "PIT:Котлован",
+          "zone_type": "PIT",
+          "name": "Котлован",
+          "visibility": {
+            "status": "OK",
+            "cameras_total": 1,
+            "cameras_usable": 1,
+            "reason": null
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 0,
+              "evidence": [
+                {
+                  "image_id": "2ffd283b-c026-588d-a9ca-7024ca929415",
+                  "detection_id": "50fd07fe-faa4-59d1-b067-ad0dc5ccf957",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "ENTRY_GATE:Въезд",
+          "zone_type": "ENTRY_GATE",
+          "name": "Въезд",
+          "visibility": {
+            "status": "PARTIAL",
+            "cameras_total": 2,
+            "cameras_usable": 1,
+            "reason": "DARK"
+          },
+          "equipment": [
+            {
+              "equipment_class": "excavator",
+              "count": 1,
+              "static": 1,
+              "evidence": [
+                {
+                  "image_id": "2ffd283b-c026-588d-a9ca-7024ca929415",
+                  "detection_id": "115b3ca2-8117-5fc3-89d8-4bd0f713e736",
+                  "camera": "cam-north",
+                  "conf": 0.9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "area": "STORAGE:Склад",
+          "zone_type": "STORAGE",
+          "name": "Склад",
+          "visibility": {
+            "status": "BLIND",
+            "cameras_total": 1,
+            "cameras_usable": 0,
+            "reason": "DARK"
+          },
+          "equipment": []
+        }
+      ],
+      "outside_zones": []
+    }
+  ]
+}

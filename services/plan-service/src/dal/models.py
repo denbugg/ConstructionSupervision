@@ -2,7 +2,8 @@
 
 Перечисления хранятся как text + CHECK, а не как postgres enum: добавление
 значения не должно требовать миграции. Ссылки на данные других сервисов —
-только UUID без внешних ключей.
+только UUID без внешних ключей. Классов техники здесь нет: их единственный
+источник — packages/contracts/equipment_classes.yaml (ADR-0014).
 """
 
 from datetime import date, datetime
@@ -13,10 +14,10 @@ from sqlalchemy import (
     CheckConstraint,
     Date,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
-    UniqueConstraint,
     func,
     text,
 )
@@ -33,9 +34,11 @@ PHASES = (
     "NETWORKS",
     "LANDSCAPING",
 )
-ZONE_TYPES = ("PIT", "BUILDING_FOOTPRINT", "PERIMETER", "ENTRY_GATE", "STORAGE", "DANGER", "ROAD")
-STAGE_SOURCES = ("POS_ENGINE", "IMPORT", "MANUAL")
-EQUIPMENT_GROUPS = ("EARTHWORKS", "LIFTING", "CONCRETE", "TRANSPORT", "ROAD", "OTHER")
+# Только типы зон с ролью WORK (enums.yaml: zone_type_role): работы этапа идут на
+# рабочем участке, а въезд, склад и опасная зона этапом не бывают.
+STAGE_ZONE_TYPES = ("PIT", "BUILDING_FOOTPRINT", "PERIMETER", "ROAD")
+STAGE_LABELS = ("PIT", "PILES", "FOUNDATION", "FRAME", "FACADE", "LANDSCAPING")
+STAGE_SOURCES = ("GENERATED", "IMPORT", "MANUAL")
 
 
 def _in(column: str, values: tuple[str, ...]) -> str:
@@ -56,10 +59,10 @@ class TimestampMixin:
 
 
 class WorkCalendar(Base, TimestampMixin):
-    """Рабочий календарь: выходные, праздники, рабочее время.
+    """Рабочий календарь: выходные, праздники, рабочие часы.
 
-    Рабочее время влияет на D1 и D4: отклонения не строятся по сессиям,
-    попавшим в нерабочие часы.
+    Рабочие часы заданы в местном времени `timezone`, а сессии площадки — в UTC:
+    перевод делает analysis-service, поэтому часовой пояс хранится рядом с часами.
     """
 
     __tablename__ = "work_calendar"
@@ -67,6 +70,7 @@ class WorkCalendar(Base, TimestampMixin):
     id: Mapped[UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
     code: Mapped[str] = mapped_column(String(64), unique=True)
     name: Mapped[str] = mapped_column(String(200))
+    timezone: Mapped[str] = mapped_column(String(64), server_default=text("'Europe/Moscow'"))
     weekend_days: Mapped[list] = mapped_column(JSONB, server_default=text("'[6, 7]'::jsonb"))
     holidays: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
     work_hours: Mapped[dict] = mapped_column(
@@ -87,12 +91,14 @@ class ConstructionObject(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(Text)
     object_type: Mapped[str] = mapped_column(String(32), index=True)
     address: Mapped[str | None] = mapped_column(Text)
-    # Технико-экономические показатели в том виде, в каком их вернул pos-engine.
+    # Параметры для генератора графика: этажность, площадь, секции, сваи, сменность.
     tep: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     plan_start: Mapped[date | None] = mapped_column(Date)
     calendar_id: Mapped[UUID | None] = mapped_column(ForeignKey("work_calendar.id"))
     status: Mapped[str] = mapped_column(String(16), server_default=text("'DRAFT'"), index=True)
-    current_revision: Mapped[int] = mapped_column(Integer, server_default=text("0"))
+    # Растёт при любой правке этапов, правил или календаря и попадает в прогон анализа:
+    # по нему видно, на какой версии плана построен вывод.
+    plan_version: Mapped[int] = mapped_column(Integer, server_default=text("0"))
 
 
 class WorkType(Base):
@@ -108,96 +114,77 @@ class WorkType(Base):
     name: Mapped[str] = mapped_column(Text)
     level: Mapped[int] = mapped_column(Integer)
     parent_code: Mapped[str | None] = mapped_column(String(32), index=True)
-    # Флаги обязательности по типам объектов: {"RESIDENTIAL": true, "ROAD": false}
+    # Отметки обязательности по девяти столбцам исходного файла: {"Жильё": true, …}
     applicable: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     source: Mapped[str | None] = mapped_column(Text)
 
 
-class EquipmentClass(Base, TimestampMixin):
-    """Класс техники. Добавление нового класса — строка здесь, без правки кода."""
-
-    __tablename__ = "equipment_class"
-    __table_args__ = (
-        CheckConstraint(_in("group_code", EQUIPMENT_GROUPS), name="ck_equipment_group"),
-    )
-
-    code: Mapped[str] = mapped_column(String(64), primary_key=True)
-    name_ru: Mapped[str] = mapped_column(String(200))
-    group_code: Mapped[str] = mapped_column(String(32))
-    # Метки внешних датасетов и текстовые промпты для open-vocabulary детектора.
-    aliases: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
-    is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
-    icon: Mapped[str | None] = mapped_column(String(64))
-
-
 class Stage(Base, TimestampMixin):
-    """Веха календарного графика: укрупнённый этап работ с плановыми датами."""
+    """Этап календарного графика: укрупнённая единица работ с плановыми датами."""
 
     __tablename__ = "stage"
     __table_args__ = (
         CheckConstraint(_in("phase", PHASES), name="ck_stage_phase"),
-        CheckConstraint(_in("zone_type", ZONE_TYPES), name="ck_stage_zone_type"),
+        CheckConstraint(_in("zone_type", STAGE_ZONE_TYPES), name="ck_stage_zone_type"),
+        CheckConstraint(
+            f"visual_stage IS NULL OR {_in('visual_stage', STAGE_LABELS)}",
+            name="ck_stage_visual_stage",
+        ),
         CheckConstraint(_in("source", STAGE_SOURCES), name="ck_stage_source"),
         CheckConstraint("plan_end >= plan_start", name="ck_stage_dates"),
+        CheckConstraint("norm_duration_days > 0", name="ck_stage_norm_duration"),
+        Index("ix_stage_object_seq", "object_id", "seq"),
+        Index("ix_stage_object_plan_start", "object_id", "plan_start"),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
-    object_id: Mapped[UUID] = mapped_column(ForeignKey("object.id", ondelete="CASCADE"), index=True)
+    object_id: Mapped[UUID] = mapped_column(ForeignKey("object.id", ondelete="CASCADE"))
     code: Mapped[str] = mapped_column(String(64))
     work_codes: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
     name: Mapped[str] = mapped_column(Text)
     phase: Mapped[str] = mapped_column(String(32))
     seq: Mapped[int] = mapped_column(Integer)
     zone_type: Mapped[str] = mapped_column(String(32))
-    plan_start: Mapped[date] = mapped_column(Date, index=True)
+    # Как объект выглядит на фото во время этапа: нужен для D7 и ограничения прогресса.
+    visual_stage: Mapped[str | None] = mapped_column(String(32))
+    plan_start: Mapped[date] = mapped_column(Date)
     plan_end: Mapped[date] = mapped_column(Date)
     norm_duration_days: Mapped[int] = mapped_column(Integer)
     # [{"stage_id": "...", "type": "FS", "lag_days": 0}]
     predecessors: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
     is_critical: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
     total_float_days: Mapped[int] = mapped_column(Integer, server_default=text("0"))
-    free_float_days: Mapped[int] = mapped_column(Integer, server_default=text("0"))
-    shifts_per_day: Mapped[int] = mapped_column(Integer, server_default=text("2"))
-    source: Mapped[str] = mapped_column(String(16), server_default=text("'POS_ENGINE'"))
-    regulatory_basis: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
+    source: Mapped[str] = mapped_column(String(16), server_default=text("'MANUAL'"))
+    # Откуда длительность: норматив и доля этапа для генератора, «импорт» для файла.
+    basis: Mapped[str | None] = mapped_column(Text)
+    # Отметка оператора «этап выполнен» — факт о работах, а не правка плана (ADR-0015):
+    # последний день работ включительно, кто отметил и почему.
+    completed_on: Mapped[date | None] = mapped_column(Date)
+    completed_by: Mapped[str | None] = mapped_column(Text)
+    completion_note: Mapped[str | None] = mapped_column(Text)
 
 
 class StageRule(Base, TimestampMixin):
-    """Правило «веха → техника»: обязательная, допустимая и сигнатурная.
+    """Правило «этап → техника»: группы обязательной, допустимая и сигнатура старта.
 
-    Создаётся из матрицы техники pos-engine, дальше редактируется оператором
-    в интерфейсе. Версия растёт при каждой правке и попадает в прогон анализа,
-    чтобы вывод оставался воспроизводимым.
+    Создаётся из шаблона этапа, дальше редактируется оператором в интерфейсе. Где
+    искать технику, задаёт `stage.zone_type`. Версия растёт при каждой правке и
+    попадает в отклонение, чтобы вывод оставался воспроизводимым.
     """
 
     __tablename__ = "stage_rule"
-    __table_args__ = (CheckConstraint(_in("zone_type", ZONE_TYPES), name="ck_rule_zone_type"),)
+    __table_args__ = (CheckConstraint("min_sessions >= 1", name="ck_rule_min_sessions"),)
 
     id: Mapped[UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
-    stage_id: Mapped[UUID] = mapped_column(ForeignKey("stage.id", ondelete="CASCADE"), index=True)
-    zone_type: Mapped[str] = mapped_column(String(32))
-    # {"excavator": 1, "dump_truck": 2}
-    required: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
+    # У этапа не больше одного правила.
+    stage_id: Mapped[UUID] = mapped_column(ForeignKey("stage.id", ondelete="CASCADE"), unique=True)
+    # [{"any_of": ["excavator"], "min": 1}, {"any_of": ["dump_truck"], "min": 2}]
+    required: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
     allowed: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
-    signature: Mapped[list] = mapped_column(JSONB, server_default=text("'[]'::jsonb"))
+    # {"equipment": ["excavator", "dump_truck"], "stage_label": null}
+    signature: Mapped[dict] = mapped_column(
+        JSONB, server_default=text("""'{"equipment": [], "stage_label": null}'::jsonb""")
+    )
     min_sessions: Mapped[int] = mapped_column(Integer, server_default=text("2"))
     version: Mapped[int] = mapped_column(Integer, server_default=text("1"))
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
-
-
-class PlanRevision(Base):
-    """Слепок графика и правил на момент правки.
-
-    Бюджетный городской объект требует аудита: кто, когда и почему подвинул срок.
-    """
-
-    __tablename__ = "plan_revision"
-    __table_args__ = (UniqueConstraint("object_id", "number", name="uq_revision_number"),)
-
-    id: Mapped[UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
-    object_id: Mapped[UUID] = mapped_column(ForeignKey("object.id", ondelete="CASCADE"), index=True)
-    number: Mapped[int] = mapped_column(Integer)
-    author: Mapped[str | None] = mapped_column(String(200))
-    reason: Mapped[str | None] = mapped_column(Text)
-    snapshot: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)

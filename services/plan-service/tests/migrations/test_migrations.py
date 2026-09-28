@@ -35,4 +35,6 @@ def test_откат_до_нуля_и_накат_обратно(alembic_config, m
 
     command.upgrade(alembic_config, "head")
     tables_at_head = _table_names(migrated_database)
-    assert {"object", "stage", "stage_rule", "work_type", "equipment_class"} <= tables_at_head
+    assert {"object", "stage", "stage_rule", "work_type", "work_calendar"} <= tables_at_head
+    # Классы техники живут в файле (ADR-0014), история правок заменена plan_version.
+    assert not {"equipment_class", "plan_revision"} & tables_at_head

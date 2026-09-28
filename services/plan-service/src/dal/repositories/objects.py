@@ -1,8 +1,9 @@
 """Запросы к таблице object. Единственное место, где есть SQL по объектам."""
 
+from collections.abc import Collection, Sequence
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.dal.models import ConstructionObject
@@ -40,3 +41,26 @@ class ObjectRepository:
         self._session.add(obj)
         await self._session.flush()
         return obj
+
+    # Возвращаемые типы — Sequence: имя list в теле класса занято методом list.
+    async def ids_with_calendar(self, calendar_id: UUID) -> Sequence[UUID]:
+        rows = await self._session.scalars(
+            select(ConstructionObject.id).where(ConstructionObject.calendar_id == calendar_id)
+        )
+        return list(rows)
+
+    async def bump_plan_version(self, object_ids: Collection[UUID]) -> Sequence[UUID]:
+        """plan_version + 1 одним UPDATE: две правки подряд не теряют ни одного шага.
+
+        Возвращает объекты не в архиве — только их анализ стоит пересчитывать.
+        """
+        if not object_ids:
+            return []
+        rows = await self._session.execute(
+            update(ConstructionObject)
+            .where(ConstructionObject.id.in_(object_ids))
+            .values(plan_version=ConstructionObject.plan_version + 1)
+            .returning(ConstructionObject.id, ConstructionObject.status)
+            .execution_options(synchronize_session="fetch")
+        )
+        return [object_id for object_id, status in rows if status != "ARCHIVED"]

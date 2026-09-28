@@ -37,7 +37,7 @@ ml/runs/
 backup/
 *.sql.gz
 data/seed/images/
-reports/
+/reports/
 
 # --- ОС и редакторы ---
 .DS_Store
@@ -45,3 +45,8 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# --- repowise: локальный индекс кода для ИИ-агентов ---
+# Пересобирается командой repowise update (и post-commit хуком), поэтому не коммитится.
+.repowise/
+.claude/CLAUDE.md

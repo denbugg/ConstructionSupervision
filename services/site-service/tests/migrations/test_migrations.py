@@ -35,4 +35,15 @@ def test_откат_до_нуля_и_накат_обратно(alembic_config, m
 
     command.upgrade(alembic_config, "head")
     tables_at_head = _table_names(migrated_database)
-    assert {"camera", "zone", "session", "image", "detection", "session_fact"} <= tables_at_head
+    assert {
+        "camera",
+        "zone",
+        "session",
+        "image",
+        "detection",
+        "stage_observation",
+        "area_visibility",
+        "session_fact",
+    } <= tables_at_head
+    # Видимость считается по участку, а не по зоне камеры (ADR-0013).
+    assert "zone_visibility" not in tables_at_head

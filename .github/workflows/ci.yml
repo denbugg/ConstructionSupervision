@@ -144,9 +144,26 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,scope=${{ matrix.service }},mode=max
 
+  # Чистый раннер — это «чужой компьютер»: если сторонний образ пропал из реестра, как MinIO
+  # 27.09 (ADR-0016), CI краснеет в тот же день, а не на демо-стенде.
+  third-party:
+    name: Сторонние образы
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env
+      # Список явный: --ignore-buildable потянул бы и образ site-worker из приватного ghcr —
+      # у него нет своего build, он берёт образ site-service. Новый сторонний сервис — сюда.
+      - name: Скачиваются из публичных реестров
+        run: docker compose pull postgres s3 redis
+      - name: Поднимаются и готовы
+        run: docker compose up -d --wait --wait-timeout 180 postgres s3 redis
+      - if: failure()
+        run: docker compose logs postgres s3 redis
+
   green:
     name: Всё зелено
-    needs: [lint, test, build]
+    needs: [lint, test, build, third-party]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -154,7 +171,7 @@ jobs:
         run: |
           # Один обязательный статус для защиты ветки: не придётся вносить
           # в настройки каждый динамический job матрицы по отдельности.
-          for result in "${{ needs.lint.result }}" "${{ needs.test.result }}" "${{ needs.build.result }}"; do
+          for result in "${{ needs.lint.result }}" "${{ needs.test.result }}" "${{ needs.build.result }}" "${{ needs.third-party.result }}"; do
             case "$result" in
               success|skipped) ;;
               *) echo "провалено: $result"; exit 1 ;;

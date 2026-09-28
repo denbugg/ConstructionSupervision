@@ -1,0 +1,3 @@
+# Скрипты исполняются внутри Linux-контейнеров: с CRLF шебанг `#!/bin/sh\r` не находится,
+# и контейнер падает с «no such file or directory». LF — независимо от core.autocrlf.
+*.sh text eol=lf

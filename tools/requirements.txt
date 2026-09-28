@@ -1,0 +1,18 @@
+# Окружение хоста: всё, что запускается вне контейнеров (docs/runbook.md, раздел 3).
+#
+#   py -3.12 -m venv .venv
+#   .venv\Scripts\python -m pip install -r tools\requirements.txt
+#
+# Сервисы, их тесты, обучение и оценка моделей (torch, Ultralytics) живут в образах —
+# сюда они не попадают. Глобальный Python для проекта не нужен.
+
+# scripts/ (seed, e2e, demo, contracts, health) и ml/prepare — HTTP к стенду, справочники, снимки
+httpx==0.28.1
+pyyaml==6.0.2
+pillow==11.0.0
+
+# Линт и формат: та же версия, что в CI (tools/README.md)
+ruff==0.16.8
+
+# Проверка разметки тестового набора (ml/README.md, «Разметка тестового набора»)
+labelme==7.7.0

@@ -18,8 +18,6 @@ flowchart LR
     GW -->|"/api/v1/plan/"| PLAN["plan-service"]
     GW -->|"/api/v1/site/"| SITE["site-service"]
     GW -->|"/api/v1/analysis/"| ANL["analysis-service"]
-    GW -->|"/api/v1/report/"| REP["report-service"]
-    GW -->|"/api/v1/pos/"| POS["pos-engine"]
     GW -->|"/api/v1/vision/"| VIS["vision-service"]
 ```
 
@@ -33,15 +31,18 @@ flowchart LR
 | `/` | Статика SPA (`apps/web` после сборки), fallback на `index.html` для маршрутов роутера |
 | `/api/v1/plan/…` | `plan-service:8000` |
 | `/api/v1/site/…` | `site-service:8000` |
-| `/api/v1/analysis/…` | `analysis-service:8000` |
-| `/api/v1/report/…` | `report-service:8000` |
-| `/api/v1/pos/…` | `pos-engine:8000` |
+| `/api/v1/analysis/…` | `analysis-service:8000`, включая отчёты `/api/v1/analysis/reports` |
 | `/api/v1/vision/…` | `vision-service:8000` (закрыт для внешнего доступа в `prod`) |
+| прочие `/api/…` | `404 NOT_FOUND` в едином конверте ошибки, без проксирования |
 | `/docs` | Сводный Swagger UI с выбором сервиса из выпадающего списка |
 | `/health` | Живость самого gateway |
 
 Добавление нового ресурса **не требует правки gateway** — конфигурация знает только
 о сервисах, а не об их эндпоинтах.
+
+Снимки и отчёты через gateway не идут: браузер открывает их по presigned-ссылкам прямо из
+S3-хранилища, подписанным на публичный адрес `S3_PUBLIC_ENDPOINT`
+([docs/architecture.md](../../docs/architecture.md), раздел 7.2).
 
 ## 4. Что делает gateway
 

@@ -1,0 +1,51 @@
+# Описания классов для классификатора вырезок (ml/eval/cascade.py, вариант --prompts described).
+#
+# Детектору хватает коротких промптов из equipment_classes.yaml. CLIP сравнивает вырезку с
+# фразой целиком, поэтому здесь добавлены приметы из инструкции разметчика (ml/README.md,
+# «Разметка тестового набора»): гусеничный кран — это «Автокран», мачта на гусеницах — буровая.
+# Описания написаны по инструкции до замеров и по результатам теста не подбирались.
+#
+# background — «не техника»: то, что детектор ловит вместо машин (там же, шаг 1 авторазметки).
+
+templates:
+  - "a photo of a {}."
+  - "a photo of a {} at a construction site."
+  - "a cropped photo of a {}."
+  - "a low resolution photo of a {}."
+
+classes:
+  excavator: ["excavator", "tracked excavator with a bucket arm", "backhoe loader", "excavator with a hydraulic hammer"]
+  dump_truck: ["dump truck", "tipper truck with an open box body"]
+  bulldozer: ["bulldozer", "crawler dozer with a front blade"]
+  loader: ["wheel loader", "front loader", "skid steer loader"]
+  roller: ["road roller", "compactor roller"]
+  tower_crane: ["tower crane", "tall tower crane with a horizontal jib"]
+  truck_crane: ["mobile crane", "truck crane", "crawler crane with a long lattice boom", "mobile crane with outriggers"]
+  manipulator_crane: ["knuckle boom truck", "truck with a folding crane arm behind the cab"]
+  concrete_mixer: ["concrete mixer truck", "truck with a rotating concrete drum"]
+  concrete_pump: ["concrete pump truck", "truck with a long folding concrete boom"]
+  pile_driver: ["pile driver", "drilling rig", "piling rig with a tall vertical mast on tracks"]
+  truck: ["truck", "lorry", "flatbed truck", "semi-trailer truck"]
+  asphalt_paver: ["asphalt paver"]
+  grader: ["motor grader"]
+  light_truck: ["cargo van", "light truck", "van"]
+  person: ["person", "construction worker"]
+
+background:
+  - "building"
+  - "building under construction"
+  - "residential building"
+  - "concrete wall"
+  - "fence"
+  - "utility pole"
+  - "street light"
+  - "shipping container"
+  - "site office container"
+  - "scaffolding"
+  - "pile of soil"
+  - "car"
+  - "tree"
+  - "road"
+  - "construction materials"
+  - "steel structure"
+  - "sky"

@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
 import { ApiError } from "@/shared/api/client";
+import { ConfirmProvider } from "@/shared/ui/Modal";
+import { ToastProvider } from "@/shared/ui/Toast";
 
 /**
  * Серверное состояние живёт только в TanStack Query: кэш, инвалидация
@@ -19,5 +21,11 @@ const queryClient = new QueryClient({
 });
 
 export function Providers({ children }: { children: ReactNode }) {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <ConfirmProvider>{children}</ConfirmProvider>
+      </ToastProvider>
+    </QueryClientProvider>
+  );
 }

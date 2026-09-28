@@ -1,0 +1,30 @@
+{# Шаблонное резюме (README, раздел 5): те же факты, что в отчёте, собранные по шаблону.
+   Каждое число — из контекста отчёта; ссылки на отклонения — по первым восьми знакам ID.
+   Блочные теги стоят на своих строках: trim_blocks убирает перевод строки за ними. #}
+На {{ title.as_of }} объект «{{ title.object }}» — {{ title.status | lower }}{% if title.delay != "—" %}, отклонение от графика по критическому пути {{ title.delay }} раб. дн.{% endif %}{% if title.spi != "—" %}, SPI {{ title.spi }}{% endif %}; уверенность вывода — {{ title.confidence }}.
+
+{% if counts.deviations %}
+За период {{ title.period }} зафиксировано отклонений: {{ counts.deviations }}, из них открыто: {{ counts.open }} ({% for code, n in counts.by_code %}{{ code }} — {{ n }}{% if not loop.last %}, {% endif %}{% endfor %}).
+{% for d in deviations[:5] %}
+• [{{ d.id }}] {{ d.code }}, {{ d.severity | lower }}: {{ d.title }} ({{ d.status }}).
+{% endfor %}
+{% if deviations | length > 5 %}
+Остальные — в таблице отклонений.
+{% endif %}
+{% else %}
+За период {{ title.period }} отклонений не зафиксировано.
+{% endif %}
+
+{% if summary.at_risk %}
+Этапы в зоне риска:
+{% for s in summary.at_risk %}
+• {{ s.name }}: по плану до {{ s.plan_end }}, прогноз {{ s.forecast_end }} ({{ s.delay }} раб. дн.).
+{% endfor %}
+{% else %}
+Этапов критического пути с прогнозом позже плана нет.
+{% endif %}
+
+{{ limitations[0] }}
+{% for line in limitations if " не виден в " in line %}
+{{ line }}
+{% endfor %}

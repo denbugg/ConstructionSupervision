@@ -9,9 +9,15 @@ import { defineConfig } from "vite";
 // gateway, поэтому путь запроса одинаков и в dev, и в проде.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // Алиас @ → src/: tsconfig о нём знает, но резолвит импорты сборщик.
+  // Алиасы: @ → src/, @api → сгенерированные типы API. tsconfig о них знает, но резолвит
+  // импорты сборщик. Из @api импортируются только типы, в бандл он не попадает.
   resolve: {
-    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    alias: {
+      "@api": fileURLToPath(
+        new URL("../../packages/ts-api-client/src/index.ts", import.meta.url),
+      ),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
   server: {
     port: 5173,

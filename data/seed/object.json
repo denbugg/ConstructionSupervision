@@ -1,0 +1,7 @@
+{
+  "name": "Демо: монолитный каркас на открытых кадрах Universidad de Lima",
+  "object_type": "RESIDENTIAL_MONOLITH",
+  "address": "Кадры: Universidad de Lima, Перу (CC BY 4.0), даты демо условные",
+  "plan_start": "2026-03-02",
+  "tep": {"floors": 7, "sections": 1, "total_area": 18000}
+}
