@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+{#- PDF-отчёт план-факт (README analysis-service, раздел 5): восемь разделов. Числа — только
+    из контекста (src/report/context.py), шаблон их не считает. -#}
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Отчёт план-факт — {{ title.object }}</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm 16mm 12mm;
+    @bottom-right { content: "стр. " counter(page) " из " counter(pages); font-family: "DejaVu Sans", sans-serif; font-size: 8pt; color: #5e6763; }
+    @bottom-left { content: "СтройКонтроль · {{ title.object | replace('"', '') }}"; font-family: "DejaVu Sans", sans-serif; font-size: 8pt; color: #5e6763; } }
+  body { font-family: "DejaVu Sans", sans-serif; font-size: 9pt; color: #15181a; line-height: 1.35; }
+  h1 { font-size: 16pt; margin: 0 0 4pt; }
+  h2 { font-size: 12pt; margin: 14pt 0 6pt; border-bottom: 1px solid #d6d3d1; padding-bottom: 2pt; }
+  .muted { color: #5e6763; }
+  .tiles { display: flex; gap: 6pt; margin: 8pt 0; }
+  .tile { flex: 1; border: 1px solid #d6d3d1; border-radius: 3pt; padding: 5pt 7pt; }
+  .tile b { display: block; font-size: 13pt; }
+  table { width: 100%; border-collapse: collapse; margin: 4pt 0; }
+  th, td { text-align: left; vertical-align: top; padding: 3pt 4pt; border-bottom: 1px solid #e7e5e4; }
+  th { color: #5e6763; font-weight: normal; }
+  .sev-HIGH { color: #b91c1c; font-weight: bold; }
+  .sev-MEDIUM { color: #b45309; }
+  .status-DELAY { color: #b91c1c; } .status-ON_TRACK { color: #047857; } .status-AHEAD { color: #0369a1; }
+  figure { margin: 0 0 10pt; page-break-inside: avoid; }
+  figcaption { font-size: 8pt; margin-top: 2pt; }
+  .summary { white-space: pre-line; border-left: 3px solid #c2451a; padding-left: 8pt; }
+  a { color: #c2451a; text-decoration: none; }
+  .source { font-size: 8pt; color: #5e6763; margin-top: 4pt; }
+  .limits li { margin-bottom: 3pt; }
+  .missing { border: 1px dashed #a8a29e; padding: 10pt; color: #5e6763; }
+</style>
+</head>
+<body>
+{#- ID строк таблицы отклонений: только на них ведут ссылки из резюме и подписей снимков. -#}
+{% set table_ids = deviations | map(attribute='id') | list %}
+
+<section>
+  <h1>Отчёт план-факт</h1>
+  <p><b>{{ title.object }}</b><br>
+  Период: {{ title.period }} · анализ на {{ title.as_of }} · версия плана {{ title.plan_version }}<br>
+  <span class="muted">Сформирован {{ title.generated_at }} (время московское)</span></p>
+  <div class="tiles">
+    <div class="tile">Статус<b class="status-{{ title.status_code }}">{{ title.status }}</b></div>
+    <div class="tile">Отклонение от графика<b>{{ title.delay }} раб. дн.</b><span class="muted">по критическому пути, при текущем темпе</span></div>
+    <div class="tile">SPI<b>{{ title.spi }}</b><span class="muted">освоенный объём к плановому</span></div>
+    <div class="tile">Уверенность<b>{{ title.confidence }}</b></div>
+  </div>
+</section>
+
+{#- Резюме — сразу за титулом: его читают первым. Ссылки на отклонения ведут к строкам
+    таблицы «Отклонения за период» ниже. -#}
+<section>
+  <h2>Резюме</h2>
+  <div class="summary">{{ summary_text.text | link_refs(table_ids) }}</div>
+  <p class="source">Источник текста: {{ summary_text.source }}. Все числа резюме взяты из разделов
+  ниже; ссылка по ID ведёт к отклонению в таблице.</p>
+</section>
+
+<section>
+  <h2>Сводка</h2>
+  <p>SPI объекта: <b>{{ summary.spi }}</b> — прогресс этапов, взвешенный нормативными длительностями,
+  к плановому на момент анализа. Меньше 1 — отставание.
+  Этапы по статусам: {% for name, n in summary.stage_statuses %}{{ name }} — {{ n }}{% if not loop.last %}, {% endif %}{% endfor %}.</p>
+  {% if summary.phases %}
+  <table>
+    <tr><th>Фаза</th><th>Этапов</th><th>Плановый прогресс</th><th>Фактический прогресс</th></tr>
+    {% for p in summary.phases %}
+    <tr><td>{{ p.phase }}</td><td>{{ p.stages }}</td><td>{{ p.plan }}</td><td>{{ p.fact }}</td></tr>
+    {% endfor %}
+  </table>
+  <p class="muted">Прогресс фазы — средний по этапам с весом нормативной длительности (раб. дн.).</p>
+  {% endif %}
+  <h3>Этапы в зоне риска</h3>
+  {% if summary.at_risk %}
+  <table>
+    <tr><th>Этап</th><th>Окончание по плану</th><th>Прогноз</th><th>Отставание, раб. дн.</th></tr>
+    {% for s in summary.at_risk %}
+    <tr><td>{{ s.name }}</td><td>{{ s.plan_end }}</td><td>{{ s.forecast_end }}</td><td>{{ s.delay }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>Этапов критического пути с прогнозом позже плана нет.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Диаграмма Ганта план-факт</h2>
+  {% if gantt %}
+  {{ gantt | safe }}
+  <p class="muted">Полоса — плановое окно этапа (красная рамка — критический путь), заливка — выполненная
+  доля цветом статуса, треугольник — фактический старт, пунктир — прогноз позже плана, ±N — отставание
+  в рабочих днях.</p>
+  {% else %}
+  <p class="missing">У объекта нет графика.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Загрузка техники по дням</h2>
+  {% if equipment %}
+  {{ equipment | safe }}
+  <p class="muted">В клетке — наибольшее число единиц класса в одной сессии за день, в скобках — в скольких
+  рабочих сессиях класс был виден. Серая клетка — класс в этот день не видели.</p>
+  {% else %}
+  <p class="missing">За период техника на снимках не распознана.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Отклонения за период</h2>
+  {% if deviations %}
+  <table>
+    <tr><th>ID</th><th>Код</th><th>Серьёзность</th><th>Этап</th><th>Участок</th><th>Что</th><th>Когда</th><th>Статус</th></tr>
+    {% for d in deviations %}
+    <tr id="dev-{{ d.id }}"><td>{{ d.id }}</td><td>{{ d.code }}</td><td class="sev-{{ d.severity_code }}">{{ d.severity }}</td>
+      <td>{{ d.stage }}</td><td>{{ d.area }}</td><td><b>{{ d.title }}</b><br>{{ d.message }}</td>
+      <td>{{ d.period }}</td><td>{{ d.status }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>За период отклонений не зафиксировано.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Снимки-доказательства</h2>
+  {% for e in evidence %}
+  <figure>
+    {% if e.image.data_uri %}
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+         viewBox="0 0 {{ e.image.width }} {{ e.image.height }}" width="100%">
+      <image x="0" y="0" width="{{ e.image.width }}" height="{{ e.image.height }}" xlink:href="{{ e.image.data_uri }}"/>
+      {% set stroke = [e.image.width, e.image.height] | max / 250 %}
+      {% for b in e.image.boxes %}
+      <rect x="{{ b.bbox[0] * e.image.width }}" y="{{ b.bbox[1] * e.image.height }}"
+            width="{{ (b.bbox[2] - b.bbox[0]) * e.image.width }}" height="{{ (b.bbox[3] - b.bbox[1]) * e.image.height }}"
+            fill="none" stroke="{{ '#dc2626' if b.highlighted else '#fbbf24' }}"
+            stroke-width="{{ stroke * (2 if b.highlighted else 1) }}"{% if not b.highlighted %} stroke-dasharray="{{ stroke * 4 }} {{ stroke * 3 }}"{% endif %}/>
+      {% if b.highlighted %}
+      {#- Подпись у правой рамки прижата к её правому краю, у верхней — уходит под рамку:
+          иначе название машины у края кадра обрезается. -#}
+      {% set right = b.bbox[0] > 0.5 %}
+      {% set below = b.bbox[1] < 0.08 %}
+      <text x="{{ (b.bbox[2] if right else b.bbox[0]) * e.image.width }}"
+            y="{{ b.bbox[3] * e.image.height + stroke * 8 if below else b.bbox[1] * e.image.height - stroke * 2 }}"
+            text-anchor="{{ 'end' if right else 'start' }}"
+            font-size="{{ stroke * 6 }}" font-family="DejaVu Sans" font-weight="bold" fill="#dc2626">{{ b.label }}</text>
+      {% endif %}
+      {% endfor %}
+    </svg>
+    {% else %}
+    <div class="missing">Снимок {{ e.image.image_id | string | truncate(8, True, '') }} не вставлен: {{ e.image.problem }}.</div>
+    {% endif %}
+    <figcaption><b>[{% if e.deviation.id in table_ids %}<a href="#dev-{{ e.deviation.id }}">{{ e.deviation.id }}</a>{% else %}{{ e.deviation.id }}{% endif %}] {{ e.deviation.code }} · {{ e.deviation.title }}</b><br>
+    Снимок {{ e.captured_at }} · {{ e.deviation.area }} ·
+    {% if e.image.boxes | selectattr('highlighted') | list %}красная рамка — техника, на которой стоит вывод;
+    жёлтый пунктир — остальные рамки кадра.{% else %}вывод о том, чего на участке нет: выделять нечего;
+    жёлтый пунктир — распознанная техника кадра.{% endif %}</figcaption>
+  </figure>
+  {% else %}
+  <p>Снимков-доказательств нет: за период нет отклонений со снимками.</p>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>Ограничения</h2>
+  <ul class="limits">
+    {% for line in limitations %}<li>{{ line }}</li>{% endfor %}
+  </ul>
+</section>
+
+</body>
+</html>

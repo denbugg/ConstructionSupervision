@@ -1,0 +1,3679 @@
+{
+  "components": {
+    "schemas": {
+      "Body_import_plan_api_v1_plan_objects__object_id__plan_import_post": {
+        "properties": {
+          "file": {
+            "description": "График: .csv (UTF-8 или cp1251) или .xlsx",
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_plan_api_v1_plan_objects__object_id__plan_import_post",
+        "type": "object"
+      },
+      "Body_import_work_types_api_v1_plan_work_types_import_post": {
+        "properties": {
+          "file": {
+            "description": "Справочник работ, .xlsx, первый лист",
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_work_types_api_v1_plan_work_types_import_post",
+        "type": "object"
+      },
+      "CalendarCreate": {
+        "properties": {
+          "code": {
+            "description": "Не меняется после создания: на код ссылается DEFAULT_CALENDAR",
+            "examples": [
+              "moscow-5day"
+            ],
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$",
+            "title": "Code",
+            "type": "string"
+          },
+          "holidays": {
+            "description": "Нерабочие праздничные дни; у каждой даты — источник",
+            "items": {
+              "format": "date",
+              "type": "string"
+            },
+            "title": "Holidays",
+            "type": "array"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "timezone": {
+            "default": "Europe/Moscow",
+            "description": "IANA, например Europe/Moscow",
+            "title": "Timezone",
+            "type": "string"
+          },
+          "weekend_days": {
+            "description": "Выходные по ISO: понедельник = 1, воскресенье = 7",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Weekend Days",
+            "type": "array"
+          },
+          "work_hours": {
+            "$ref": "#/components/schemas/WorkHours"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "weekend_days",
+          "work_hours"
+        ],
+        "title": "CalendarCreate",
+        "type": "object"
+      },
+      "CalendarRead": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "holidays": {
+            "items": {
+              "format": "date",
+              "type": "string"
+            },
+            "title": "Holidays",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "weekend_days": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Weekend Days",
+            "type": "array"
+          },
+          "work_hours": {
+            "$ref": "#/components/schemas/WorkHours"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "timezone",
+          "weekend_days",
+          "holidays",
+          "work_hours",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CalendarRead",
+        "type": "object"
+      },
+      "CalendarUpdate": {
+        "description": "Частичное изменение. Списки заменяются целиком: праздник убирается новым списком.",
+        "properties": {
+          "holidays": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Holidays"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "weekend_days": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekend Days"
+          },
+          "work_hours": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WorkHours"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "CalendarUpdate",
+        "type": "object"
+      },
+      "EquipmentClassRead": {
+        "properties": {
+          "aliases": {
+            "description": "Метки класса во внешних датасетах",
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "code": {
+            "examples": [
+              "excavator"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "group": {
+            "title": "Group",
+            "type": "string"
+          },
+          "name_ru": {
+            "title": "Name Ru",
+            "type": "string"
+          },
+          "prompts": {
+            "description": "Текстовые запросы детектору",
+            "items": {
+              "type": "string"
+            },
+            "title": "Prompts",
+            "type": "array"
+          },
+          "transient": {
+            "description": "Приезжает рейсами: присутствие считается за окно нескольких сессий",
+            "title": "Transient",
+            "type": "boolean"
+          },
+          "works_in_place": {
+            "description": "Работает, не сдвигаясь с места: неподвижность на рабочем участке не простой",
+            "title": "Works In Place",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "name_ru",
+          "group",
+          "transient",
+          "works_in_place",
+          "prompts",
+          "aliases"
+        ],
+        "title": "EquipmentClassRead",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ObjectCreate": {
+        "description": "Создание объекта.\n\nТип можно не указывать: по умолчанию объект — монолитный жилой дом.",
+        "properties": {
+          "address": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "name": {
+            "examples": [
+              "Строительство монолитного жилого дома 17 этажей, г. Москва"
+            ],
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Name",
+            "type": "string"
+          },
+          "object_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "RESIDENTIAL_MONOLITH",
+                  "RESIDENTIAL_PANEL",
+                  "PUBLIC_BUILDING",
+                  "ROAD"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Object Type"
+          },
+          "plan_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Плановая дата начала СМР",
+            "title": "Plan Start"
+          },
+          "tep": {
+            "description": "Параметры для генератора графика: этажность, площадь, секции, сваи, сменность",
+            "title": "Tep",
+            "type": "object"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ObjectCreate",
+        "type": "object"
+      },
+      "ObjectRead": {
+        "properties": {
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "calendar_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Рабочий календарь; при создании — DEFAULT_CALENDAR",
+            "title": "Calendar Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "object_type": {
+            "enum": [
+              "RESIDENTIAL_MONOLITH",
+              "RESIDENTIAL_PANEL",
+              "PUBLIC_BUILDING",
+              "ROAD"
+            ],
+            "title": "Object Type",
+            "type": "string"
+          },
+          "plan_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Start"
+          },
+          "plan_version": {
+            "description": "Растёт при любой правке этапов, правил или календаря; 0 — план не заводился",
+            "title": "Plan Version",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "DRAFT",
+              "ACTIVE",
+              "ARCHIVED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "tep": {
+            "title": "Tep",
+            "type": "object"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "object_type",
+          "address",
+          "tep",
+          "plan_start",
+          "status",
+          "calendar_id",
+          "plan_version",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ObjectRead",
+        "type": "object"
+      },
+      "ObjectUpdate": {
+        "description": "Частичное изменение: передаются только меняемые поля.",
+        "properties": {
+          "address": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "minLength": 5,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "object_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "RESIDENTIAL_MONOLITH",
+                  "RESIDENTIAL_PANEL",
+                  "PUBLIC_BUILDING",
+                  "ROAD"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Object Type"
+          },
+          "plan_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Start"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "DRAFT",
+                  "ACTIVE",
+                  "ARCHIVED"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "tep": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tep"
+          }
+        },
+        "title": "ObjectUpdate",
+        "type": "object"
+      },
+      "Page_CalendarRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CalendarRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[CalendarRead]",
+        "type": "object"
+      },
+      "Page_EquipmentClassRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EquipmentClassRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[EquipmentClassRead]",
+        "type": "object"
+      },
+      "Page_ObjectRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ObjectRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ObjectRead]",
+        "type": "object"
+      },
+      "Page_RuleRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RuleRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[RuleRead]",
+        "type": "object"
+      },
+      "Page_StageRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/StageRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[StageRead]",
+        "type": "object"
+      },
+      "Page_WorkTypeRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WorkTypeRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[WorkTypeRead]",
+        "type": "object"
+      },
+      "Plan": {
+        "properties": {
+          "calendar": {
+            "$ref": "#/components/schemas/PlanCalendar"
+          },
+          "equipment_classes": {
+            "items": {
+              "$ref": "#/components/schemas/PlanEquipmentClass"
+            },
+            "title": "Equipment Classes",
+            "type": "array"
+          },
+          "object": {
+            "$ref": "#/components/schemas/PlanObject"
+          },
+          "plan_version": {
+            "title": "Plan Version",
+            "type": "integer"
+          },
+          "stages": {
+            "description": "Все этапы объекта по seq",
+            "items": {
+              "$ref": "#/components/schemas/PlanStage"
+            },
+            "title": "Stages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "object",
+          "plan_version",
+          "calendar",
+          "equipment_classes",
+          "stages"
+        ],
+        "title": "Plan",
+        "type": "object"
+      },
+      "PlanCalendar": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "holidays": {
+            "items": {
+              "format": "date",
+              "type": "string"
+            },
+            "title": "Holidays",
+            "type": "array"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          },
+          "weekend_days": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Weekend Days",
+            "type": "array"
+          },
+          "work_hours": {
+            "$ref": "#/components/schemas/WorkHours"
+          }
+        },
+        "required": [
+          "code",
+          "timezone",
+          "weekend_days",
+          "holidays",
+          "work_hours"
+        ],
+        "title": "PlanCalendar",
+        "type": "object"
+      },
+      "PlanEquipmentClass": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "group": {
+            "enum": [
+              "EARTHWORKS",
+              "LIFTING",
+              "CONCRETE",
+              "TRANSPORT",
+              "ROAD",
+              "OTHER"
+            ],
+            "title": "Group",
+            "type": "string"
+          },
+          "name_ru": {
+            "title": "Name Ru",
+            "type": "string"
+          },
+          "transient": {
+            "title": "Transient",
+            "type": "boolean"
+          },
+          "works_in_place": {
+            "title": "Works In Place",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "name_ru",
+          "group",
+          "transient",
+          "works_in_place"
+        ],
+        "title": "PlanEquipmentClass",
+        "type": "object"
+      },
+      "PlanGenerateRequest": {
+        "description": "Всё необязательно: чего нет в запросе, берётся из карточки объекта.",
+        "properties": {
+          "start_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Дата начала; по умолчанию `plan_start` объекта. Сохраняется в нём",
+            "title": "Start Date"
+          },
+          "tep": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Параметры: `floors`, `total_area` (м² квартир) — обязательно; `sections`, `piles`, `shifts` (`1.5`, `2`, `3`). Дополняют `tep` объекта и сохраняются в нём",
+            "examples": [
+              {
+                "floors": 17,
+                "piles": 200,
+                "sections": 2,
+                "total_area": 10000
+              }
+            ],
+            "title": "Tep"
+          }
+        },
+        "title": "PlanGenerateRequest",
+        "type": "object"
+      },
+      "PlanGenerateResult": {
+        "properties": {
+          "basis": {
+            "description": "Откуда срок: пункт и строка таблицы МРР, коэффициенты",
+            "title": "Basis",
+            "type": "string"
+          },
+          "critical_stages": {
+            "description": "Сколько этапов на критическом пути",
+            "title": "Critical Stages",
+            "type": "integer"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "plan_end": {
+            "description": "Последний рабочий день графика",
+            "format": "date",
+            "title": "Plan End",
+            "type": "string"
+          },
+          "plan_start": {
+            "description": "Первый рабочий день графика",
+            "format": "date",
+            "title": "Plan Start",
+            "type": "string"
+          },
+          "plan_version": {
+            "title": "Plan Version",
+            "type": "integer"
+          },
+          "rules": {
+            "description": "Сколько этапов получили правило из шаблона",
+            "title": "Rules",
+            "type": "integer"
+          },
+          "stages": {
+            "description": "Сколько этапов в новом графике",
+            "title": "Stages",
+            "type": "integer"
+          },
+          "total_months": {
+            "description": "Срок по МРР с коэффициентами, мес.",
+            "title": "Total Months",
+            "type": "number"
+          }
+        },
+        "required": [
+          "object_id",
+          "plan_version",
+          "stages",
+          "rules",
+          "critical_stages",
+          "plan_start",
+          "plan_end",
+          "total_months",
+          "basis"
+        ],
+        "title": "PlanGenerateResult",
+        "type": "object"
+      },
+      "PlanImportResult": {
+        "properties": {
+          "critical_stages": {
+            "description": "Сколько этапов на критическом пути",
+            "title": "Critical Stages",
+            "type": "integer"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "plan_version": {
+            "title": "Plan Version",
+            "type": "integer"
+          },
+          "rules": {
+            "description": "Сколько этапов получили правило из шаблона",
+            "title": "Rules",
+            "type": "integer"
+          },
+          "stages": {
+            "description": "Сколько этапов в новом графике",
+            "title": "Stages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "object_id",
+          "plan_version",
+          "stages",
+          "rules",
+          "critical_stages"
+        ],
+        "title": "PlanImportResult",
+        "type": "object"
+      },
+      "PlanObject": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "object_type": {
+            "enum": [
+              "RESIDENTIAL_MONOLITH",
+              "RESIDENTIAL_PANEL",
+              "PUBLIC_BUILDING",
+              "ROAD"
+            ],
+            "title": "Object Type",
+            "type": "string"
+          },
+          "plan_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Start"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "object_type",
+          "plan_start"
+        ],
+        "title": "PlanObject",
+        "type": "object"
+      },
+      "PlanRule": {
+        "properties": {
+          "allowed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "min_sessions": {
+            "title": "Min Sessions",
+            "type": "integer"
+          },
+          "required": {
+            "items": {
+              "$ref": "#/components/schemas/RequiredGroup"
+            },
+            "title": "Required",
+            "type": "array"
+          },
+          "signature": {
+            "$ref": "#/components/schemas/Signature"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "required",
+          "allowed",
+          "signature",
+          "min_sessions"
+        ],
+        "title": "PlanRule",
+        "type": "object"
+      },
+      "PlanStage": {
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "completed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed By"
+          },
+          "completed_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Отметка оператора «этап выполнен» — последний день работ, включительно; как её учитывает анализ — methodology.md, 10.3b",
+            "title": "Completed On"
+          },
+          "completion_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completion Note"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_critical": {
+            "title": "Is Critical",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "norm_duration_days": {
+            "title": "Norm Duration Days",
+            "type": "integer"
+          },
+          "phase": {
+            "enum": [
+              "PREPARATORY",
+              "SUBSTRUCTURE",
+              "SUPERSTRUCTURE",
+              "ENVELOPE_ROOF",
+              "NETWORKS",
+              "LANDSCAPING"
+            ],
+            "title": "Phase",
+            "type": "string"
+          },
+          "plan_end": {
+            "description": "Последний рабочий день этапа, включительно",
+            "format": "date",
+            "title": "Plan End",
+            "type": "string"
+          },
+          "plan_start": {
+            "format": "date",
+            "title": "Plan Start",
+            "type": "string"
+          },
+          "predecessors": {
+            "items": {
+              "$ref": "#/components/schemas/PredecessorRead"
+            },
+            "title": "Predecessors",
+            "type": "array"
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanRule"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null — правила нет или оно выключено: D1, D2, D8, D9 по этапу не проверяются"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "total_float_days": {
+            "title": "Total Float Days",
+            "type": "integer"
+          },
+          "visual_stage": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PIT",
+                  "PILES",
+                  "FOUNDATION",
+                  "FRAME",
+                  "FACADE",
+                  "LANDSCAPING"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visual Stage"
+          },
+          "work_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Work Codes",
+            "type": "array"
+          },
+          "zone_type": {
+            "enum": [
+              "PIT",
+              "BUILDING_FOOTPRINT",
+              "PERIMETER",
+              "ENTRY_GATE",
+              "STORAGE",
+              "DANGER",
+              "ROAD"
+            ],
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "phase",
+          "seq",
+          "work_codes",
+          "zone_type",
+          "visual_stage",
+          "plan_start",
+          "plan_end",
+          "norm_duration_days",
+          "predecessors",
+          "is_critical",
+          "total_float_days",
+          "basis"
+        ],
+        "title": "PlanStage",
+        "type": "object"
+      },
+      "PredecessorRead": {
+        "properties": {
+          "lag_days": {
+            "description": "Лаг в рабочих днях",
+            "title": "Lag Days",
+            "type": "integer"
+          },
+          "stage_id": {
+            "format": "uuid",
+            "title": "Stage Id",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "FS",
+              "SS",
+              "FF",
+              "SF"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage_id",
+          "type",
+          "lag_days"
+        ],
+        "title": "PredecessorRead",
+        "type": "object"
+      },
+      "RequiredGroup": {
+        "description": "Группа «любой из»: выполнена, если суммарно единиц классов не меньше min.",
+        "properties": {
+          "any_of": {
+            "examples": [
+              [
+                "roller",
+                "bulldozer"
+              ]
+            ],
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Any Of",
+            "type": "array"
+          },
+          "min": {
+            "minimum": 1.0,
+            "title": "Min",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "any_of",
+          "min"
+        ],
+        "title": "RequiredGroup",
+        "type": "object"
+      },
+      "RestoredCode": {
+        "properties": {
+          "cell": {
+            "description": "Дата, которую Excel записал вместо кода",
+            "title": "Cell",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "row": {
+            "description": "Строка файла, как в Excel",
+            "title": "Row",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "row",
+          "cell",
+          "code"
+        ],
+        "title": "RestoredCode",
+        "type": "object"
+      },
+      "RuleCreate": {
+        "properties": {
+          "allowed": {
+            "description": "Не вызывает D3",
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed",
+            "type": "array"
+          },
+          "is_active": {
+            "default": true,
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "min_sessions": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Сколько рабочих сессий подряд держится условие; по умолчанию 2",
+            "title": "Min Sessions"
+          },
+          "required": {
+            "items": {
+              "$ref": "#/components/schemas/RequiredGroup"
+            },
+            "title": "Required",
+            "type": "array"
+          },
+          "signature": {
+            "$ref": "#/components/schemas/Signature"
+          },
+          "stage_id": {
+            "description": "У этапа не больше одного правила",
+            "format": "uuid",
+            "title": "Stage Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage_id"
+        ],
+        "title": "RuleCreate",
+        "type": "object"
+      },
+      "RuleRead": {
+        "properties": {
+          "allowed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "min_sessions": {
+            "title": "Min Sessions",
+            "type": "integer"
+          },
+          "required": {
+            "items": {
+              "$ref": "#/components/schemas/RequiredGroup"
+            },
+            "title": "Required",
+            "type": "array"
+          },
+          "signature": {
+            "$ref": "#/components/schemas/Signature"
+          },
+          "stage_id": {
+            "format": "uuid",
+            "title": "Stage Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version": {
+            "description": "Растёт при каждой правке; попадает в отклонение",
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "stage_id",
+          "version",
+          "required",
+          "allowed",
+          "signature",
+          "min_sessions",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RuleRead",
+        "type": "object"
+      },
+      "RuleUpdate": {
+        "description": "Частичное изменение. Списки и сигнатура заменяются целиком.",
+        "properties": {
+          "allowed": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "min_sessions": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Sessions"
+          },
+          "required": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/RequiredGroup"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required"
+          },
+          "signature": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Signature"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "RuleUpdate",
+        "type": "object"
+      },
+      "Signature": {
+        "description": "Признак фактического старта этапа: техника одновременно и (или) стадия по фото.",
+        "properties": {
+          "equipment": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Equipment",
+            "type": "array"
+          },
+          "stage_label": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PIT",
+                  "PILES",
+                  "FOUNDATION",
+                  "FRAME",
+                  "FACADE",
+                  "LANDSCAPING"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Стадия по фото не раньше",
+            "title": "Stage Label"
+          }
+        },
+        "title": "Signature",
+        "type": "object"
+      },
+      "StageRead": {
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "completed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Кто поставил отметку",
+            "title": "Completed By"
+          },
+          "completed_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Отметка «этап выполнен»: последний день работ (ADR-0015)",
+            "title": "Completed On"
+          },
+          "completion_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Комментарий к отметке",
+            "title": "Completion Note"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_critical": {
+            "title": "Is Critical",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "norm_duration_days": {
+            "title": "Norm Duration Days",
+            "type": "integer"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "phase": {
+            "enum": [
+              "PREPARATORY",
+              "SUBSTRUCTURE",
+              "SUPERSTRUCTURE",
+              "ENVELOPE_ROOF",
+              "NETWORKS",
+              "LANDSCAPING"
+            ],
+            "title": "Phase",
+            "type": "string"
+          },
+          "plan_end": {
+            "description": "Последний рабочий день этапа, включительно",
+            "format": "date",
+            "title": "Plan End",
+            "type": "string"
+          },
+          "plan_start": {
+            "format": "date",
+            "title": "Plan Start",
+            "type": "string"
+          },
+          "predecessors": {
+            "items": {
+              "$ref": "#/components/schemas/PredecessorRead"
+            },
+            "title": "Predecessors",
+            "type": "array"
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RuleRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Правило «этап → техника»"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "source": {
+            "enum": [
+              "GENERATED",
+              "IMPORT",
+              "MANUAL"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "total_float_days": {
+            "title": "Total Float Days",
+            "type": "integer"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "visual_stage": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PIT",
+                  "PILES",
+                  "FOUNDATION",
+                  "FRAME",
+                  "FACADE",
+                  "LANDSCAPING"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visual Stage"
+          },
+          "work_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Work Codes",
+            "type": "array"
+          },
+          "zone_type": {
+            "enum": [
+              "PIT",
+              "BUILDING_FOOTPRINT",
+              "PERIMETER",
+              "ENTRY_GATE",
+              "STORAGE",
+              "DANGER",
+              "ROAD"
+            ],
+            "title": "Zone Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "code",
+          "name",
+          "phase",
+          "seq",
+          "work_codes",
+          "zone_type",
+          "visual_stage",
+          "plan_start",
+          "plan_end",
+          "norm_duration_days",
+          "predecessors",
+          "is_critical",
+          "total_float_days",
+          "source",
+          "basis",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "StageRead",
+        "type": "object"
+      },
+      "StageUpdate": {
+        "description": "Частичное изменение. Связи и критический путь здесь не правятся (T19).",
+        "properties": {
+          "completed_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Отметка «этап выполнен» — последний день работ; автор — из `X-Actor`. null — снять отметку вместе с автором и комментарием",
+            "title": "Completed On"
+          },
+          "completion_note": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Комментарий к отметке: акт, кто принял",
+            "title": "Completion Note"
+          },
+          "norm_duration_days": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Нормативная длительность в рабочих днях",
+            "title": "Norm Duration Days"
+          },
+          "plan_end": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Включительно",
+            "title": "Plan End"
+          },
+          "plan_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Start"
+          },
+          "visual_stage": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PIT",
+                  "PILES",
+                  "FOUNDATION",
+                  "FRAME",
+                  "FACADE",
+                  "LANDSCAPING"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null — снять стадию",
+            "title": "Visual Stage"
+          },
+          "zone_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "PIT",
+                  "BUILDING_FOOTPRINT",
+                  "PERIMETER",
+                  "ENTRY_GATE",
+                  "STORAGE",
+                  "DANGER",
+                  "ROAD"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Только тип с ролью WORK",
+            "title": "Zone Type"
+          }
+        },
+        "title": "StageUpdate",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkHours": {
+        "properties": {
+          "end": {
+            "examples": [
+              "23:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "examples": [
+              "07:00"
+            ],
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "WorkHours",
+        "type": "object"
+      },
+      "WorkTypeImportResult": {
+        "properties": {
+          "restored_codes": {
+            "description": "Коды, которые Excel превратил в даты, и во что они восстановлены",
+            "items": {
+              "$ref": "#/components/schemas/RestoredCode"
+            },
+            "title": "Restored Codes",
+            "type": "array"
+          },
+          "rows_without_code": {
+            "description": "Сколько строк получили код от парсера",
+            "title": "Rows Without Code",
+            "type": "integer"
+          },
+          "work_types": {
+            "description": "Сколько строк справочника загружено",
+            "title": "Work Types",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "work_types",
+          "rows_without_code",
+          "restored_codes"
+        ],
+        "title": "WorkTypeImportResult",
+        "type": "object"
+      },
+      "WorkTypeRead": {
+        "properties": {
+          "applicable": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "description": "Отметки обязательности по столбцам типов объектов файла. `false` не запрещает работу для этого типа (ТЗ, п. 1)",
+            "title": "Applicable",
+            "type": "object"
+          },
+          "code": {
+            "description": "Код из файла заказчика. У строки без кода — `<код родителя>/<n>`: n-я такая строка под ближайшим кодом сверху",
+            "examples": [
+              "12.3.1"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "level": {
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Level",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "parent_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Code"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Файл, лист и номер строки первоисточника",
+            "title": "Source"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "level",
+          "parent_code",
+          "applicable",
+          "source"
+        ],
+        "title": "WorkTypeRead",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Сервис плана: объекты, справочник работ, календарный график, правила «этап → техника». Единственное место, где план можно изменить.",
+    "title": "plan-service",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/plan/calendars": {
+      "get": {
+        "operationId": "list_calendars_api_v1_plan_calendars_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_CalendarRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Рабочие календари",
+        "tags": [
+          "Календари"
+        ]
+      },
+      "post": {
+        "operationId": "create_calendar_api_v1_plan_calendars_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalendarCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Создать календарь",
+        "tags": [
+          "Календари"
+        ]
+      }
+    },
+    "/api/v1/plan/calendars/{calendar_id}": {
+      "get": {
+        "operationId": "get_calendar_api_v1_plan_calendars__calendar_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "calendar_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Calendar Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Календарь",
+        "tags": [
+          "Календари"
+        ]
+      },
+      "patch": {
+        "description": "Выходные, праздники, рабочие часы или часовой пояс: у всех объектов на календаре растёт `plan_version`, и в analysis уходит сигнал «пересчитай».",
+        "operationId": "update_calendar_api_v1_plan_calendars__calendar_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "calendar_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Calendar Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalendarUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить календарь",
+        "tags": [
+          "Календари"
+        ]
+      }
+    },
+    "/api/v1/plan/equipment-classes": {
+      "get": {
+        "description": "Новый класс — запись в `packages/contracts/equipment_classes.yaml` и перезапуск plan-service и vision-service, без правки кода.",
+        "operationId": "get_equipment_classes_api_v1_plan_equipment_classes_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "group",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "EARTHWORKS",
+                    "LIFTING",
+                    "CONCRETE",
+                    "TRANSPORT",
+                    "ROAD",
+                    "OTHER"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Group"
+            }
+          },
+          {
+            "in": "query",
+            "name": "transient",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Transient"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_EquipmentClassRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Классы техники",
+        "tags": [
+          "Справочники"
+        ]
+      }
+    },
+    "/api/v1/plan/objects": {
+      "get": {
+        "operationId": "list_objects_api_v1_plan_objects_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "DRAFT",
+                    "ACTIVE",
+                    "ARCHIVED"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "object_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "RESIDENTIAL_MONOLITH",
+                    "RESIDENTIAL_PANEL",
+                    "PUBLIC_BUILDING",
+                    "ROAD"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ObjectRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Список объектов",
+        "tags": [
+          "Объекты"
+        ]
+      },
+      "post": {
+        "operationId": "create_object_api_v1_plan_objects_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Создать объект",
+        "tags": [
+          "Объекты"
+        ]
+      }
+    },
+    "/api/v1/plan/objects/{object_id}": {
+      "delete": {
+        "operationId": "archive_object_api_v1_plan_objects__object_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Перевести объект в архив",
+        "tags": [
+          "Объекты"
+        ]
+      },
+      "get": {
+        "operationId": "get_object_api_v1_plan_objects__object_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Карточка объекта",
+        "tags": [
+          "Объекты"
+        ]
+      },
+      "patch": {
+        "operationId": "update_object_api_v1_plan_objects__object_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить реквизиты объекта",
+        "tags": [
+          "Объекты"
+        ]
+      }
+    },
+    "/api/v1/plan/objects/{object_id}/plan": {
+      "get": {
+        "description": "Этапы по `seq`, связи, правила, календарь и классы техники одним ответом. Объект без этапов — не ошибка: `stages: []`. Выключенное правило приходит как `rule: null`.",
+        "operationId": "get_plan_api_v1_plan_objects__object_id__plan_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Весь план объекта",
+        "tags": [
+          "График"
+        ]
+      }
+    },
+    "/api/v1/plan/objects/{object_id}/plan/generate": {
+      "post": {
+        "description": "Сроки периодов — табл. 1 п. 5.1.21 с интерполяцией и коэффициентами, этапы и правила — из шаблона типа объекта, даты — по календарю объекта. У каждого этапа в `basis` — откуда его срок. Поверх существующего графика — только с `force=true` (ручные правки затираются). Нет норм для типа или параметры вне таблицы — `NORMS_NOT_AVAILABLE`, график тогда импортируется из файла.",
+        "operationId": "generate_plan_api_v1_plan_objects__object_id__plan_generate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Force",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PlanGenerateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanGenerateResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Сгенерировать график по МРР-3.2.81-12",
+        "tags": [
+          "График"
+        ]
+      }
+    },
+    "/api/v1/plan/objects/{object_id}/plan/import": {
+      "post": {
+        "description": "Столбцы: код, наименование, начало, окончание (обязательно); тип участка, визуальная стадия, связи (`12.3.1 FS+2`, несколько — через запятую), фаза. Недостающее берётся из шаблона этапа с тем же кодом, вместе с правилом «этап → техника». График заменяется целиком; поверх существующего — только с `force=true`. Ошибки — `PLAN_IMPORT_INVALID` со списком `details.errors` (строка, столбец, текст).",
+        "operationId": "import_plan_api_v1_plan_objects__object_id__plan_import_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Force",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_plan_api_v1_plan_objects__object_id__plan_import_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanImportResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Импорт графика из CSV или XLSX",
+        "tags": [
+          "График"
+        ]
+      }
+    },
+    "/api/v1/plan/objects/{object_id}/stages": {
+      "get": {
+        "description": "Этапы по `seq` вместе с правилом «этап → техника» (`rule`, `null` — правила нет).",
+        "operationId": "list_stages_api_v1_plan_objects__object_id__stages_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_StageRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Этапы объекта",
+        "tags": [
+          "График"
+        ]
+      }
+    },
+    "/api/v1/plan/rules": {
+      "get": {
+        "operationId": "list_rules_api_v1_plan_rules_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "stage_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stage Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_RuleRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Правила этапов",
+        "tags": [
+          "Правила этапов"
+        ]
+      },
+      "post": {
+        "description": "Коды классов проверяются по `equipment_classes.yaml`. Версия правила и `plan_version` объекта растут, в analysis уходит сигнал «пересчитай». `X-Actor` — кто правит, в журнал.",
+        "operationId": "create_rule_api_v1_plan_rules_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Создать правило этапа",
+        "tags": [
+          "Правила этапов"
+        ]
+      }
+    },
+    "/api/v1/plan/rules/{rule_id}": {
+      "delete": {
+        "description": "По этапу без правила не проверяются D1, D2, D8, D9. `plan_version` растёт.",
+        "operationId": "delete_rule_api_v1_plan_rules__rule_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Удалить правило этапа",
+        "tags": [
+          "Правила этапов"
+        ]
+      },
+      "get": {
+        "operationId": "get_rule_api_v1_plan_rules__rule_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Правило этапа",
+        "tags": [
+          "Правила этапов"
+        ]
+      },
+      "patch": {
+        "description": "Коды классов проверяются по `equipment_classes.yaml`. Версия правила и `plan_version` объекта растут, в analysis уходит сигнал «пересчитай». `X-Actor` — кто правит, в журнал.",
+        "operationId": "update_rule_api_v1_plan_rules__rule_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить правило этапа",
+        "tags": [
+          "Правила этапов"
+        ]
+      }
+    },
+    "/api/v1/plan/stages/{stage_id}": {
+      "patch": {
+        "description": "Даты (включительно), тип участка, нормативная длительность, стадия по фото, отметка «этап выполнен» (`completed_on`, `completion_note`; автор — из `X-Actor`, `completed_on: null` снимает отметку). `plan_version` объекта растёт, в analysis уходит сигнал «пересчитай».",
+        "operationId": "update_stage_api_v1_plan_stages__stage_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stage_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Stage Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StageUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StageRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить этап",
+        "tags": [
+          "График"
+        ]
+      }
+    },
+    "/api/v1/plan/work-types": {
+      "get": {
+        "description": "В порядке файла заказчика: «10.2» раньше «10.10», строки без кода — сразу за своим кодом.",
+        "operationId": "list_work_types_api_v1_plan_work_types_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 4,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Level"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parent_code",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parent Code"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_WorkTypeRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Справочник работ",
+        "tags": [
+          "Справочники"
+        ]
+      }
+    },
+    "/api/v1/plan/work-types/import": {
+      "post": {
+        "description": "«Сводный перечень строительных работ ЛТЦ» (data/README.md). Коды, которые Excel превратил в даты, восстанавливаются (`d.m.2025` → `d.m`), строки без кода относятся к 4-му уровню ближайшего кода сверху. Справочник заменяется целиком. Ошибки — `WORK_TYPES_IMPORT_INVALID` со списком `details.errors` (строка, столбец, текст).",
+        "operationId": "import_work_types_api_v1_plan_work_types_import_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_work_types_api_v1_plan_work_types_import_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkTypeImportResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Загрузить справочник работ из XLSX",
+        "tags": [
+          "Справочники"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Процесс жив",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Готов обслуживать запросы",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

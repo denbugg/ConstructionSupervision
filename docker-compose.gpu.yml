@@ -1,0 +1,16 @@
+# Оверлей целевого стенда: видеокарта для vision-service.
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# Оверлей, а не профиль: профиль добавляет сервисы, но не дополняет уже описанный. Docker Desktop
+# на WSL2 пробрасывает карту сам, нужен только драйвер NVIDIA для Windows (runbook.md, раздел 1).
+# Проверка, что карта видна: GET /api/v1/vision/model → "device": "cuda".
+
+services:
+  vision-service:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

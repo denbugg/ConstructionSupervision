@@ -1,0 +1,170 @@
+# Начальные настройки правил отклонений D1–D10 (docs/methodology.md, раздел 9).
+#
+# При первом старте сервис переносит их в таблицу deviation_rule (T15), дальше
+# источник истины — таблица: пороги и тексты правятся через API и интерфейс.
+# Новый тип отклонения из готового предиката — новая запись здесь, без кода.
+#
+# Поля:
+#   predicate        — имя функции из реестра core/predicates.py;
+#   severity         — базовая серьёзность (enums.yaml: severity);
+#   params           — пороги. min_sessions — сколько рабочих сессий подряд держится
+#                      условие (у D1, D2, D8 его задаёт правило этапа, а не эта запись);
+#                      escalate_after_days + escalate_to — повышение серьёзности, если
+#                      условие держится столько рабочих дней; variants — другие
+#                      формулировки того же кода: предикат выбирает вариант полем
+#                      facts.template_variant;
+#   title_template,
+#   message_template — текст карточки. Подстановки — поля facts отклонения;
+#                      после двоеточия — формат: date (ДД.ММ.ГГГГ), counts (техника
+#                      с числами), groups (группы правила), list (перечень через запятую).
+#
+# Значения порогов — наши экспертные допущения из methodology.md, а не нормативы.
+
+rules:
+  D1:
+    predicate: missing_required
+    severity: MEDIUM
+    params: {escalate_after_days: 1, escalate_to: HIGH}
+    title_template: "Нет обязательной техники: «{stage_name}»"
+    message_template: >-
+      Этап «{stage_name}» идёт по плану с {plan_start:date} по {plan_end:date}.
+      На участке «{area_name}» {sessions_checked} рабочих сессий подряд нет ни одной
+      единицы обязательной техники: {groups:groups}. Транзитная техника учитывается
+      за последние {transient_window_sessions} сессии. Правило этапа, версия {stage_rule_version}.
+
+  D2:
+    predicate: incomplete_set
+    severity: MEDIUM
+    params: {escalate_after_days: 3, escalate_to: HIGH}
+    title_template: "Неполный комплект техники: «{stage_name}»"
+    message_template: >-
+      Этап «{stage_name}» идёт по плану с {plan_start:date} по {plan_end:date}.
+      На участке «{area_name}» {sessions_checked} рабочих сессий подряд: {observed:counts}.
+      Не выполнено: {groups_failed:groups}. Транзитная техника учитывается за последние
+      {transient_window_sessions} сессии. Правило этапа, версия {stage_rule_version}.
+
+  # D3–D6: ключ — участок и класс техники; min_sessions — в params (T11).
+  D3:
+    predicate: unexpected_equipment
+    severity: MEDIUM
+    # Одиночный кадр отклонения не порождает (methodology.md, раздел 6).
+    # variants.ahead — формулировка, когда класс нужен будущему этапу участка: ключом
+    # отклонения тогда становится тот этап.
+    params:
+      min_sessions: 2
+      variants:
+        ahead:
+          title_template: "Возможное опережение: {equipment_name} для «{future_stage_name}»"
+          message_template: >-
+            На участке «{area_name}» {sessions_checked} рабочих сессий подряд:
+            {equipment_name}, {count} ед. Этой техники нет в правилах активных этапов участка
+            ({active_stages:list}), но она нужна этапу «{future_stage_name}», который по плану
+            начинается {future_plan_start:date}.
+    title_template: "Техника не по этапу: {equipment_name}"
+    message_template: >-
+      На участке «{area_name}» {sessions_checked} рабочих сессий подряд: {equipment_name},
+      {count} ед. Этой техники нет в правилах активных этапов участка: {active_stages:list}.
+
+  D4:
+    predicate: idle_equipment
+    severity: LOW
+    params: {min_sessions: 3, escalate_after_days: 1, escalate_to: MEDIUM}
+    title_template: "Простой: {equipment_name}"
+    message_template: >-
+      {state_reason}. Так {sessions_checked} рабочих сессий подряд, единиц: {count}.
+
+  D5:
+    predicate: wrong_zone
+    severity: MEDIUM
+    params: {min_sessions: 2}
+    title_template: "Техника не в той зоне: {equipment_name}"
+    message_template: >-
+      {state_reason}. Так {sessions_checked} рабочих сессий подряд, единиц: {count}.
+      Активные по плану этапы: {active_stages:list}.
+
+  D6:
+    predicate: danger_zone
+    severity: HIGH
+    params: {min_sessions: 1}
+    title_template: "Опасная зона: {equipment_name}"
+    message_template: >-
+      В опасной зоне «{area_name}» замечено: {equipment_name}, {count} ед. Рабочих
+      сессий подряд: {sessions_checked}.
+
+  # D7: ключ — этап, задающий плановую визуальную стадию на дату. Базовый текст — отставание,
+  # variants.ahead — опережение. label_names — как метки stage_label (enums.yaml) звучат в тексте.
+  D7:
+    predicate: stage_mismatch
+    severity: HIGH
+    params:
+      min_sessions: 2
+      label_names:
+        PIT: котлован
+        PILES: сваи
+        FOUNDATION: фундамент
+        FRAME: каркас
+        FACADE: фасад
+        LANDSCAPING: благоустройство
+      variants:
+        ahead:
+          title_template: "Стадия по фото опережает план: «{stage_name}»"
+          message_template: >-
+            {sessions_checked} рабочих сессий подряд объект на фото — {observed_stage_name}
+            (уверенность {observed_conf}), а по плану этапа «{stage_name}» ещё должен быть
+            {planned_stage_name}. Проверьте, не устарел ли график.
+    title_template: "Стадия по фото отстаёт от плана: «{stage_name}»"
+    message_template: >-
+      {sessions_checked} рабочих сессий подряд объект на фото — {observed_stage_name}
+      (уверенность {observed_conf}), а по плану этапа «{stage_name}» уже должен быть
+      {planned_stage_name}. Прогресс этапа не засчитывается, пока стадия не догонит план.
+
+  # D8: серия — min_sessions правила этапа, как у D1 и D2.
+  D8:
+    predicate: stage_overrun
+    severity: HIGH
+    params: {}
+    title_template: "Этап затянулся: «{stage_name}»"
+    message_template: >-
+      Этап «{stage_name}» по плану закончился {plan_end:date}, но на участке «{area_name}»
+      {sessions_checked} рабочих сессий подряд держится его признак: {signature_observed:counts}.
+      Это {days_after_plan_end} рабочих дней после плановой даты. Правило этапа, версия
+      {stage_rule_version}.
+
+  # D9: k_days — сколько первых рабочих дней этапа ждать фактического старта;
+  # min_visible_share — в какой доле рабочих сессий этих дней участок должен быть виден,
+  # чтобы «не начат» было выводом, а не догадкой.
+  D9:
+    predicate: late_start
+    severity: HIGH
+    params: {k_days: 3, min_visible_share: 0.5}
+    title_template: "Этап не начат в срок: «{stage_name}»"
+    message_template: >-
+      Этап «{stage_name}» по плану начинается {plan_start:date}, но за первые {k_days}
+      рабочих дня, по {deadline:date}, признак начала работ ({signature_names:list}) не
+      появился на участке «{area_name}». Участок был виден в {sessions_visible} из
+      {sessions_total} рабочих сессий этих дней.
+
+  # D10: reason_names — как причины слепоты (enums.yaml: visibility_reason) звучат в тексте.
+  # variants.no_area — у активного этапа нет ни одного размеченного участка его типа.
+  D10:
+    predicate: blind_area
+    severity: INFO
+    params:
+      min_sessions: 2
+      reason_names:
+        NO_IMAGES: нет снимков
+        DARK: слишком темно
+        BLURRED: кадры размыты
+        OCCLUDED: обзор перекрыт
+      variants:
+        no_area:
+          title_template: "Вне контроля ИИ: «{stage_name}»"
+          message_template: >-
+            Этап «{stage_name}» идёт по плану с {plan_start:date} по {plan_end:date}, но
+            участок его типа ({zone_type}) не размечен ни на одной камере — так
+            {sessions_checked} рабочих сессий подряд. Выводы по этапу не делаются: разметьте
+            зону или проверьте вручную.
+    title_template: "Вне контроля ИИ: «{area_name}»"
+    message_template: >-
+      Участок «{area_name}» {sessions_checked} рабочих сессий подряд не виден ни одной
+      камерой: {reason_name}. Выводы по нему не делаются — проверьте вручную.

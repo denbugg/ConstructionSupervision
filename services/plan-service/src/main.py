@@ -1,7 +1,7 @@
 """Точка входа plan-service.
 
 Сервис плана: объекты, справочник работ, календарный график, правила
-«веха → техника». Реализует требования F11 и F15 (docs/traceability.md).
+«этап → техника». Реализует требования F11 и F15 (docs/traceability.md).
 """
 
 from contextlib import asynccontextmanager
@@ -18,8 +18,10 @@ from lct_common import (
 from lct_common.db import create_engine, create_session_factory, make_db_check
 
 from src.api.routes import api_router
-from src.clients.pos_client import PosClient
+from src.clients.analysis_client import AnalysisClient
 from src.config import settings
+from src.reference import reference
+from src.templates import norms, templates
 
 setup_logging(settings.service_name, settings.log_level, pretty=settings.is_dev)
 log = get_logger(__name__)
@@ -27,16 +29,33 @@ log = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Ресурсы, живущие столько же, сколько процесс: пул БД и HTTP-клиенты."""
+    """Ресурсы, живущие столько же, сколько процесс: пул БД и клиент сигнала в analysis."""
     engine = create_engine(settings.plan_db_dsn, echo=settings.db_echo)
     app.state.engine = engine
     app.state.session_factory = create_session_factory(engine)
-    app.state.pos_client = PosClient(settings.pos_url, settings.api_key, settings.pos_timeout_s)
+    # Сигнал без повторов: отправитель не ждёт и не повторяет (interservice.md, раздел 4).
+    app.state.analysis_client = AnalysisClient(
+        settings.analysis_url,
+        service="analysis-service",
+        api_key=settings.api_key,
+        timeout_s=settings.signal_timeout_s,
+        retries=0,
+    )
 
-    log.info("service.started", version=settings.version, env=settings.env)
+    log.info(
+        "service.started",
+        version=settings.version,
+        env=settings.env,
+        # Справочники уже прочитаны при импорте схем: испорченный файл не даёт стартовать.
+        equipment_classes=len(reference().equipment_classes),
+        # Шаблон этапов проверяется при старте: испорченный файл не даёт сервису подняться.
+        wbs_templates={k: len(v) for k, v in templates().items()},
+        # Нормы МРР сверяются с шаблоном этапов тоже при старте.
+        mrr_norms={k: len(v.rows) for k, v in norms().items()},
+    )
     yield
 
-    await app.state.pos_client.aclose()
+    await app.state.analysis_client.aclose()
     await engine.dispose()
     log.info("service.stopped")
 
@@ -46,7 +65,7 @@ app = FastAPI(
     version=settings.version,
     description=(
         "Сервис плана: объекты, справочник работ, календарный график, "
-        "правила «веха → техника». Единственное место, где план можно изменить."
+        "правила «этап → техника». Единственное место, где план можно изменить."
     ),
     lifespan=lifespan,
     # В проде интерактивная документация закрыта: наружу её отдаёт gateway.
@@ -62,12 +81,7 @@ app.include_router(
     make_health_router(
         settings.service_name,
         settings.version,
-        checks=[
-            HealthCheck("db", lambda: make_db_check(app.state.engine)()),
-            # pos-engine нужен только для генерации графика: импорт из файла
-            # и работа с объектами доступны и без него.
-            HealthCheck("pos-engine", lambda: app.state.pos_client.ping(), required=False),
-        ],
+        checks=[HealthCheck("db", lambda: make_db_check(app.state.engine)())],
     )
 )
 app.include_router(api_router)

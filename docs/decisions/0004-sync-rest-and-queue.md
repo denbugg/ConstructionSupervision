@@ -1,6 +1,9 @@
 # ADR-0004. Синхронный REST и очередь задач вместо брокера сообщений
 
-**Статус:** принято, 17.09.2026
+**Статус:** принято, 17.09.2026. Перечень событий уточнён в
+[packages/contracts/events.md](../../packages/contracts/events.md) после
+[ADR-0012](0012-facts-without-judgement.md): вместо `session.closed` и `session.aggregated` —
+`facts.updated`.
 
 ## Контекст
 

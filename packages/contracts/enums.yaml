@@ -3,62 +3,62 @@
 # Правила (packages/contracts/README.md):
 #   - добавить значение можно;
 #   - удалить или переименовать — несовместимое изменение, нужен ADR и /api/v2;
-#   - дублировать эти списки в коде сервисов запрещено.
+#   - дублировать эти списки в коде сервисов запрещено. Единственное исключение —
+#     CHECK-ограничения в миграциях и моделях БД (AGENTS.md, раздел 7).
 #
-# Значения SCREAMING_SNAKE_CASE, кроме кодов классов техники: они lower_snake_case,
-# потому что совпадают с метками CV-модели и с ключами в required/allowed/signature.
+# Значения SCREAMING_SNAKE_CASE. Классы техники — не перечисление, а справочник:
+# они лежат в equipment_classes.yaml (ADR-0014).
 
 object_type:        [RESIDENTIAL_MONOLITH, RESIDENTIAL_PANEL, PUBLIC_BUILDING, ROAD]
 construction_phase: [PREPARATORY, SUBSTRUCTURE, SUPERSTRUCTURE, ENVELOPE_ROOF, NETWORKS, LANDSCAPING]
 object_lifecycle:   [DRAFT, ACTIVE, ARCHIVED]
 
 zone_type:          [PIT, BUILDING_FOOTPRINT, PERIMETER, ENTRY_GATE, STORAGE, DANGER, ROAD]
+# Роль типа зоны определяет, что значит машина на участке этого типа
+# (docs/methodology.md, раздел 6):
+#   WORK    — здесь идут работы этапов; машина в активном рабочем участке работает;
+#   SERVICE — здесь машины ждут; нетранзитная машина здесь простаивает;
+#   SAFETY  — опасная зона, накладывается поверх остальных и даёт D6.
+zone_type_role:
+  PIT: WORK
+  BUILDING_FOOTPRINT: WORK
+  PERIMETER: WORK
+  ROAD: WORK
+  ENTRY_GATE: SERVICE
+  STORAGE: SERVICE
+  DANGER: SAFETY
+# Русское название типа зоны. Это название участка по умолчанию, если при разметке его не
+# задали (docs/data-model.md, 2.2), и подпись типа в интерфейсе.
+zone_type_name:
+  PIT: Котлован
+  BUILDING_FOOTPRINT: Пятно застройки
+  PERIMETER: Периметр
+  ENTRY_GATE: Въезд
+  STORAGE: Склад
+  DANGER: Опасная зона
+  ROAD: Дорога
 visibility_status:  [OK, PARTIAL, BLIND]
-visibility_reason:  [NO_IMAGES, DARK, OCCLUDED, BLURRED]
+visibility_reason:  [NO_IMAGES, DARK, BLURRED, OCCLUDED]
 
-equipment_role:     [REQUIRED, ALLOWED, SIGNATURE]
+equipment_group:    [EARTHWORKS, LIFTING, CONCRETE, TRANSPORT, ROAD, OTHER]
 equipment_state:    [WORKING, IDLE, OUT_OF_ZONE, UNKNOWN]
 
+# Порядок значений — порядок стадий на фото: «раньше» и «позже» в D7 и в ограничении
+# прогресса сравниваются по индексу в этом списке.
 stage_label:        [PIT, PILES, FOUNDATION, FRAME, FACADE, LANDSCAPING]
-stage_source:       [POS_ENGINE, IMPORT, MANUAL]
+stage_source:       [GENERATED, IMPORT, MANUAL]
 stage_fact_status:  [NOT_STARTED, IN_PROGRESS, DONE, LATE, AHEAD]
+dependency_type:    [FS, SS, FF, SF]
 
 image_status:       [NEEDS_TIME, PENDING, PROCESSING, ANALYZED, FAILED]
 image_source:       [UPLOAD, API, FOLDER_IMPORT]
 timestamp_source:   [EXIF, FILENAME, MANUAL, UNKNOWN]
-session_status:     [OPEN, CLOSED, AGGREGATED]
 
 deviation_code:     [D1, D2, D3, D4, D5, D6, D7, D8, D9, D10]
 severity:           [INFO, LOW, MEDIUM, HIGH]
 deviation_status:   [NEW, CONFIRMED, REJECTED, RESOLVED]
-deviation_verdict:  [CONFIRMED, FALSE_POSITIVE]
 
 object_status:      [ON_TRACK, DELAY, AHEAD, UNKNOWN]
 confidence:         [LOW, MEDIUM, HIGH]
-dependency_type:    [FS, SS, FF, SF]
-analysis_trigger:   [SESSION_CLOSED, PLAN_CHANGED, RULES_CHANGED, MANUAL]
-
-# Стартовая таксономия техники для первичного заполнения справочника
-# plandb.equipment_class. Дальше классы живут в БД и правятся оператором:
-# добавление класса — строка в справочнике, а не правка этого файла.
-#
-# prompts — текстовые запросы для open-vocabulary детектора. Английские
-# работают заметно лучше русских, поэтому таксономия русская, а промпты нет.
-equipment_class_seed:
-  - {code: excavator,         name_ru: "Экскаватор",                    group_code: EARTHWORKS, prompts: ["excavator", "digger", "backhoe"]}
-  - {code: dump_truck,        name_ru: "Самосвал",                      group_code: TRANSPORT,  prompts: ["dump truck", "tipper truck"]}
-  - {code: bulldozer,         name_ru: "Бульдозер",                     group_code: EARTHWORKS, prompts: ["bulldozer", "crawler dozer"]}
-  - {code: loader,            name_ru: "Погрузчик",                     group_code: EARTHWORKS, prompts: ["wheel loader", "front loader"]}
-  - {code: roller,            name_ru: "Каток",                         group_code: ROAD,       prompts: ["road roller", "compactor roller"]}
-  - {code: tower_crane,       name_ru: "Башенный кран",                 group_code: LIFTING,    prompts: ["tower crane"]}
-  - {code: truck_crane,       name_ru: "Автокран",                      group_code: LIFTING,    prompts: ["mobile crane", "truck crane"]}
-  - {code: manipulator_crane, name_ru: "Кран-манипулятор",              group_code: LIFTING,    prompts: ["knuckle boom truck", "truck mounted crane"]}
-  - {code: concrete_mixer,    name_ru: "Автобетоносмеситель",           group_code: CONCRETE,   prompts: ["concrete mixer truck", "cement mixer truck"]}
-  - {code: concrete_pump,     name_ru: "Автобетононасос",               group_code: CONCRETE,   prompts: ["concrete pump truck", "boom pump"]}
-  - {code: pile_driver,       name_ru: "Буровая/сваебойная установка",  group_code: EARTHWORKS, prompts: ["pile driver", "drilling rig"]}
-  - {code: truck,             name_ru: "Грузовик",                      group_code: TRANSPORT,  prompts: ["truck", "lorry"]}
-  - {code: asphalt_paver,     name_ru: "Асфальтоукладчик",              group_code: ROAD,       prompts: ["asphalt paver", "asphalt finisher"]}
-  - {code: grader,            name_ru: "Грейдер",                       group_code: ROAD,       prompts: ["motor grader"]}
-  - {code: person,            name_ru: "Человек",                       group_code: OTHER,      prompts: ["person", "construction worker"]}
-
-equipment_group:    [EARTHWORKS, LIFTING, CONCRETE, TRANSPORT, ROAD, OTHER]
+analysis_trigger:   [FACTS_UPDATED, PLAN_CHANGED, MANUAL]
+run_status:         [RUNNING, DONE, FAILED]

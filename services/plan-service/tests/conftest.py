@@ -19,6 +19,10 @@ import pytest
 # это и есть смысл правила «доменная логика не знает про БД и сеть».
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
+# Справочные файлы: в контейнере — CONTRACTS_DIR, в рабочей копии и CI — packages/contracts.
+# Выставляется до импорта сервиса: типы перечислений строятся из enums.yaml при импорте схем.
+CONTRACTS_DIR = Path(os.getenv("CONTRACTS_DIR") or SERVICE_ROOT.parents[1] / "packages/contracts")
+os.environ["CONTRACTS_DIR"] = str(CONTRACTS_DIR)
 
 # Одна переменная на все сервисы: CI не должен знать про каждый в отдельности.
 TEST_DSN = os.getenv(
@@ -105,11 +109,26 @@ async def session(engine) -> AsyncIterator:
     await connection.close()
 
 
+class StubAnalysisClient:
+    """analysis-service в тестах: запоминает, по каким объектам ушёл сигнал «пересчитай»."""
+
+    def __init__(self) -> None:
+        self.signals: list = []
+
+    async def request_run(self, object_id) -> None:
+        self.signals.append(object_id)
+
+
 @pytest.fixture
-async def client(session) -> AsyncIterator:
-    """HTTP-клиент поверх приложения, с подменённой сессией и рабочим ключом."""
+def analysis() -> StubAnalysisClient:
+    return StubAnalysisClient()
+
+
+@pytest.fixture
+async def client(session, analysis) -> AsyncIterator:
+    """HTTP-клиент поверх приложения, с подменённой сессией, заглушкой analysis и ключом."""
     from httpx import ASGITransport, AsyncClient
-    from src.api.deps import get_session
+    from src.api.deps import get_analysis_client, get_session
     from src.config import settings
     from src.main import app
 
@@ -117,6 +136,7 @@ async def client(session) -> AsyncIterator:
         yield session
 
     app.dependency_overrides[get_session] = _session_override
+    app.dependency_overrides[get_analysis_client] = lambda: analysis
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test",
@@ -125,3 +145,38 @@ async def client(session) -> AsyncIterator:
         yield http_client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def demo_stage(client, session) -> dict:
+    """Объект с одним этапом «Разработка котлована». Импорт графика появится в T19,
+    поэтому этап пишется в базу напрямую."""
+    from datetime import date
+    from uuid import UUID
+
+    from src.dal.models import Stage
+
+    obj = (
+        await client.post(
+            "/api/v1/plan/objects",
+            json={"name": "Монолитный жилой дом, 17 этажей", "plan_start": "2026-10-15"},
+        )
+    ).json()
+    stage = Stage(
+        object_id=UUID(obj["id"]),
+        code="12.3.1",
+        work_codes=["12.3.1", "12.3.7"],
+        name="Разработка котлована",
+        phase="SUBSTRUCTURE",
+        seq=1,
+        zone_type="PIT",
+        visual_stage="PIT",
+        plan_start=date(2026, 10, 15),
+        plan_end=date(2026, 11, 20),
+        norm_duration_days=31,
+        source="IMPORT",
+        basis="импорт",
+    )
+    session.add(stage)
+    await session.flush()
+    return {"object": obj, "stage_id": str(stage.id)}

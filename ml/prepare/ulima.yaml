@@ -1,0 +1,41 @@
+# Датасет Universidad de Lima: 1046 кадров 3840×2160 с четырёх камер одной стройки, рамки YOLO.
+# Источник: https://doi.org/10.26439/ulima.datasets.13359 (CC BY 4.0), статья — Data in Brief,
+# 2022, https://pmc.ncbi.nlm.nih.gov/articles/PMC8933580/. Разбор — ml/README.md, «Датасет Лимы».
+
+# Порядок номеров классов в .txt датасета. Коды системы — через aliases «ulima:<метка>»
+# в packages/contracts/equipment_classes.yaml.
+labels: [Dump_truck, Excavator, Concrete_mixer_truck, Skid_steer, Tower_crane, Truck_crane, Truck, Person]
+
+# Рамки, которые не берём: ошибки разметки, найденные при просмотре вырезок.
+exclude_boxes:
+  - {image: 726, label: Truck_crane}  # на кадре башенный кран, а не бетононасос
+
+# Серии съёмки: камера — по подписи на кадре, время — таблица 3 статьи, сверенная со штампом
+# на кадрах (у 208–258 в таблице 01:09 вместо 13:09, 323–332 в таблице нет).
+# split — по сериям, а не по кадрам: соседние кадры серии почти одинаковы, и кадр в обучении
+# с соседом в тесте завысил бы метрики. В тесте каждая камера и все классы, кроме экскаватора
+# (3 рамки на весь датасет); миксер в тесте — только 6 кадров серии 1044–1049: остальные
+# миксеры и стрела насоса на Torre H есть лишь в двух сериях, и без них не из чего учиться.
+bursts:
+  - {ids: [1, 1],       camera: cam-d1,      start: "2020-12-02 09:10:15", end: "2020-12-02 09:10:15", split: train}
+  - {ids: [2, 54],      camera: cam-i1,      start: "2021-01-06 10:59:00", end: "2021-01-06 11:05:54", split: test}
+  - {ids: [55, 106],    camera: cam-torre-h, start: "2020-12-02 09:09:00", end: "2020-12-02 09:15:00", split: val}
+  - {ids: [107, 157],   camera: cam-torre-h, start: "2021-01-06 10:59:00", end: "2021-01-06 11:05:00", split: train}
+  - {ids: [158, 207],   camera: cam-torre-h, start: "2021-02-12 08:59:07", end: "2021-02-12 09:05:00", split: train}
+  - {ids: [208, 258],   camera: cam-torre-h, start: "2020-11-20 13:09:57", end: "2020-11-20 13:15:00", split: test}
+  - {ids: [259, 260],   camera: cam-d1,      start: "2020-11-20 09:05:32", end: "2020-11-20 09:05:57", split: train}
+  - {ids: [261, 302],   camera: cam-d1,      start: "2020-11-20 11:08:28", end: "2020-11-20 11:13:35", split: train}
+  - {ids: [303, 322],   camera: cam-d1,      start: "2020-11-20 13:12:13", end: "2020-11-20 13:14:52", split: test}
+  - {ids: [323, 332],   camera: cam-d1,      start: "2020-12-02 09:11:49", end: "2020-12-02 09:12:58", split: val}
+  - {ids: [333, 361],   camera: cam-d1,      start: "2020-12-02 09:13:04", end: "2020-12-02 09:15:17", split: train}
+  - {ids: [362, 450],   camera: cam-d1,      start: "2021-01-06 11:00:09", end: "2021-01-06 11:05:47", split: train}
+  - {ids: [451, 457],   camera: cam-d1,      start: "2020-11-20 09:05:29", end: "2020-11-20 09:05:36", split: train}
+  - {ids: [458, 562],   camera: cam-torre-h, start: "2021-01-22 08:36:00", end: "2021-01-22 11:10:00", split: train}
+  - {ids: [563, 627],   camera: cam-torre-h, start: "2020-11-20 08:59:00", end: "2020-11-20 09:05:00", split: train}
+  - {ids: [628, 699],   camera: cam-torre-h, start: "2020-11-20 11:13:00", end: "2020-11-20 11:13:59", split: test}
+  - {ids: [700, 764],   camera: cam-d3,      start: "2020-12-02 09:09:00", end: "2020-12-02 09:15:00", split: train}
+  - {ids: [765, 827],   camera: cam-d3,      start: "2021-01-06 10:59:00", end: "2021-01-06 11:05:00", split: test}
+  - {ids: [828, 901],   camera: cam-d3,      start: "2021-02-12 08:59:00", end: "2021-02-12 09:04:00", split: train}
+  - {ids: [902, 969],   camera: cam-d3,      start: "2020-11-20 08:59:00", end: "2020-11-20 09:05:00", split: train}
+  - {ids: [970, 1043],  camera: cam-i1,      start: "2020-12-02 09:10:00", end: "2020-12-02 09:16:00", split: train}
+  - {ids: [1044, 1049], camera: cam-torre-h, start: "2021-01-22 11:10:00", end: "2021-01-22 11:11:00", split: test}

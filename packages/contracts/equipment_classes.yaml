@@ -1,0 +1,42 @@
+# Классы техники — единственный источник (ADR-0014).
+#
+# Кто читает:
+#   plan-service   — отдаёт список в API и проверяет по нему коды в правилах этапов;
+#   vision-service — берёт prompts как словарь open-vocabulary детектора;
+#   ml/            — сводит метки внешних датасетов (aliases) к этим кодам;
+#   analysis       — получает code/name_ru/group/transient/works_in_place в контракте «весь план».
+#
+# Добавить класс = добавить запись и перезапустить plan-service и vision-service.
+#
+# Поля:
+#   code      — lower_snake_case; совпадает с меткой детектора и с ключами правил этапов.
+#   name_ru   — название для интерфейса и текстов предупреждений.
+#   group     — значение из enums.yaml: equipment_group.
+#   transient — машина приезжает и уезжает (рейсы). Для таких классов присутствие
+#               считается за окно из нескольких сессий, а не в одном снимке
+#               (docs/methodology.md, раздел 5).
+#   works_in_place — необязательное, по умолчанию false. Машина работает, не сдвигаясь с
+#               места: башенный кран на своей башне, автокран и бетононасос на выносных
+#               опорах. На рабочем участке с активным этапом её неподвижность не простой
+#               (docs/methodology.md, раздел 6).
+#   prompts   — текстовые запросы детектору. Английские работают заметно лучше русских.
+#   aliases   — метки этого класса во внешних датасетах; заполняются при сведении
+#               датасетов в ml/prepare. Пустой список — сведения ещё не было.
+
+equipment_classes:
+  - {code: excavator,         name_ru: "Экскаватор",                   group: EARTHWORKS, transient: false, prompts: ["excavator", "digger", "backhoe"],             aliases: ["ulima:Excavator", "ce:Excavator", "ce:Bucket loader Big", "kict:excavator"]}
+  - {code: dump_truck,        name_ru: "Самосвал",                     group: TRANSPORT,  transient: true,  prompts: ["dump truck", "tipper truck"],                 aliases: ["ulima:Dump_truck", "ce:Dump truck", "kict:dumptruck"]}
+  - {code: bulldozer,         name_ru: "Бульдозер",                    group: EARTHWORKS, transient: false, prompts: ["bulldozer", "crawler dozer"],                 aliases: ["kict:bull_dozer"]}
+  - {code: loader,            name_ru: "Погрузчик",                    group: EARTHWORKS, transient: false, prompts: ["wheel loader", "front loader"],               aliases: ["ulima:Skid_steer", "ce:Motor grader", "ce:Bucket loader Standart", "ce:Cleaning equipment"]}
+  - {code: roller,            name_ru: "Каток",                        group: ROAD,       transient: false, prompts: ["road roller", "compactor roller"],            aliases: []}
+  - {code: tower_crane,       name_ru: "Башенный кран",                group: LIFTING,    transient: false, works_in_place: true, prompts: ["tower crane"],                                aliases: ["ulima:Tower_crane"]}
+  - {code: truck_crane,       name_ru: "Автокран",                     group: LIFTING,    transient: false, works_in_place: true, prompts: ["mobile crane", "truck crane"],                aliases: ["ce:Autocran"]}
+  - {code: manipulator_crane, name_ru: "Кран-манипулятор",             group: LIFTING,    transient: false, prompts: ["knuckle boom truck", "truck mounted crane"],  aliases: ["ce:Crane manipulator", "kict:crane"]}
+  - {code: concrete_mixer,    name_ru: "Автобетоносмеситель",          group: CONCRETE,   transient: true,  prompts: ["concrete mixer truck", "cement mixer truck"], aliases: ["ulima:Concrete_mixer_truck", "ce:Mixer"]}
+  - {code: concrete_pump,     name_ru: "Автобетононасос",              group: CONCRETE,   transient: false, works_in_place: true, prompts: ["concrete pump truck", "boom pump"],           aliases: ["ulima:Truck_crane"]}
+  - {code: pile_driver,       name_ru: "Буровая/сваебойная установка", group: EARTHWORKS, transient: false, prompts: ["pile driver", "drilling rig"],                 aliases: ["kict:crawler_drill"]}
+  - {code: truck,             name_ru: "Грузовик",                     group: TRANSPORT,  transient: true,  prompts: ["truck", "lorry"],                             aliases: ["ulima:Truck", "ce:Truck", "ce:Trailer"]}
+  - {code: asphalt_paver,     name_ru: "Асфальтоукладчик",             group: ROAD,       transient: false, prompts: ["asphalt paver", "asphalt finisher"],          aliases: []}
+  - {code: grader,            name_ru: "Грейдер",                      group: ROAD,       transient: false, prompts: ["motor grader"],                               aliases: []}
+  - {code: person,            name_ru: "Человек",                      group: OTHER,      transient: false, prompts: ["person", "construction worker"],              aliases: ["ulima:Person"]}
+  - {code: light_truck,       name_ru: "Малотоннажный грузовик",       group: TRANSPORT,  transient: true,  prompts: ["cargo van", "light truck", "van"],            aliases: ["ce:Gazelle"]}

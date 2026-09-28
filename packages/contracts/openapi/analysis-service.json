@@ -1,0 +1,2521 @@
+{
+  "components": {
+    "schemas": {
+      "ActivityDay": {
+        "properties": {
+          "activity_index": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Index"
+          },
+          "blind_sessions": {
+            "title": "Blind Sessions",
+            "type": "integer"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "sessions_total": {
+            "title": "Sessions Total",
+            "type": "integer"
+          },
+          "sessions_working": {
+            "title": "Sessions Working",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "sessions_total",
+          "sessions_working",
+          "activity_index",
+          "blind_sessions"
+        ],
+        "title": "ActivityDay",
+        "type": "object"
+      },
+      "DeviationRead": {
+        "description": "Карточка: текст для человека, числа для проверки, снимки-доказательства.",
+        "properties": {
+          "area": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "equipment_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment Class"
+          },
+          "evidence": {
+            "items": {
+              "type": "object"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "facts": {
+            "title": "Facts",
+            "type": "object"
+          },
+          "first_seen_at": {
+            "format": "date-time",
+            "title": "First Seen At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "occurrences": {
+            "title": "Occurrences",
+            "type": "integer"
+          },
+          "rule_ref": {
+            "title": "Rule Ref",
+            "type": "object"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "stage_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage Id"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "CONFIRMED / REJECTED — вердикт оператора; у закрытого статус остаётся RESOLVED",
+            "title": "Verdict"
+          },
+          "verdict_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict At"
+          },
+          "verdict_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict By"
+          },
+          "verdict_comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict Comment"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "stage_id",
+          "area",
+          "equipment_class",
+          "session_id",
+          "code",
+          "severity",
+          "status",
+          "title",
+          "message",
+          "facts",
+          "rule_ref",
+          "evidence",
+          "first_seen_at",
+          "last_seen_at",
+          "occurrences",
+          "verdict",
+          "verdict_comment",
+          "verdict_by",
+          "verdict_at"
+        ],
+        "title": "DeviationRead",
+        "type": "object"
+      },
+      "DeviationRuleRead": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "message_template": {
+            "title": "Message Template",
+            "type": "string"
+          },
+          "params": {
+            "title": "Params",
+            "type": "object"
+          },
+          "predicate": {
+            "description": "Имя предиката из реестра; правится только в коде",
+            "title": "Predicate",
+            "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "title_template": {
+            "title": "Title Template",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "predicate",
+          "enabled",
+          "severity",
+          "params",
+          "title_template",
+          "message_template",
+          "updated_at"
+        ],
+        "title": "DeviationRuleRead",
+        "type": "object"
+      },
+      "DeviationRuleUpdate": {
+        "additionalProperties": false,
+        "description": "Частичная правка: передаются только меняемые поля.",
+        "properties": {
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "message_template": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message Template"
+          },
+          "params": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Сливается с текущими параметрами по ключам; ключ со значением null удаляется",
+            "examples": [
+              {
+                "min_sessions": 3
+              }
+            ],
+            "title": "Params"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "examples": [
+              "HIGH"
+            ],
+            "title": "Severity"
+          },
+          "title_template": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title Template"
+          }
+        },
+        "title": "DeviationRuleUpdate",
+        "type": "object"
+      },
+      "DeviationVerdict": {
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "status": {
+            "description": "CONFIRMED или REJECTED",
+            "examples": [
+              "REJECTED"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "DeviationVerdict",
+        "type": "object"
+      },
+      "EquipmentDay": {
+        "properties": {
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "equipment_class": {
+            "title": "Equipment Class",
+            "type": "string"
+          },
+          "max_count": {
+            "title": "Max Count",
+            "type": "integer"
+          },
+          "sessions_seen": {
+            "title": "Sessions Seen",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "equipment_class",
+          "sessions_seen",
+          "max_count"
+        ],
+        "title": "EquipmentDay",
+        "type": "object"
+      },
+      "EquipmentRead": {
+        "properties": {
+          "as_of": {
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EquipmentDay"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "as_of",
+          "items"
+        ],
+        "title": "EquipmentRead",
+        "type": "object"
+      },
+      "EvidenceRead": {
+        "properties": {
+          "detection_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Detection Ids",
+            "type": "array"
+          },
+          "image_id": {
+            "format": "uuid",
+            "title": "Image Id",
+            "type": "string"
+          },
+          "image_path": {
+            "title": "Image Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "image_id",
+          "detection_ids",
+          "image_path"
+        ],
+        "title": "EvidenceRead",
+        "type": "object"
+      },
+      "ExplainRead": {
+        "properties": {
+          "deviation": {
+            "$ref": "#/components/schemas/DeviationRead"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceRead"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeviationRuleRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Действующая настройка правила"
+          },
+          "sessions": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Сессии эпизода с фактами участка; null — site-service не ответил",
+            "title": "Sessions"
+          },
+          "sessions_truncated": {
+            "description": "Показаны только последние сессии эпизода",
+            "title": "Sessions Truncated",
+            "type": "boolean"
+          },
+          "sessions_unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sessions Unavailable Reason"
+          }
+        },
+        "required": [
+          "deviation",
+          "rule",
+          "sessions",
+          "sessions_truncated",
+          "sessions_unavailable_reason",
+          "evidence"
+        ],
+        "title": "ExplainRead",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ObjectStatusRead": {
+        "properties": {
+          "as_of": {
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "blind_areas": {
+            "description": "Участки, не видимые в последней рабочей сессии",
+            "title": "Blind Areas",
+            "type": "integer"
+          },
+          "computed_at": {
+            "format": "date-time",
+            "title": "Computed At",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "delay_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delay Days"
+          },
+          "deviations": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Открытые отклонения по серьёзности",
+            "title": "Deviations",
+            "type": "object"
+          },
+          "facts": {
+            "description": "Числа статуса: дни наблюдений, видимость",
+            "title": "Facts",
+            "type": "object"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "spi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spi"
+          },
+          "stages": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Этапы по статусам и `total`",
+            "title": "Stages",
+            "type": "object"
+          },
+          "stages_at_risk": {
+            "items": {
+              "type": "object"
+            },
+            "title": "Stages At Risk",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "computed_at",
+          "as_of",
+          "status",
+          "delay_days",
+          "spi",
+          "confidence",
+          "stages",
+          "deviations",
+          "blind_areas",
+          "stages_at_risk",
+          "facts"
+        ],
+        "title": "ObjectStatusRead",
+        "type": "object"
+      },
+      "Page_DeviationRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DeviationRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[DeviationRead]",
+        "type": "object"
+      },
+      "Page_DeviationRuleRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DeviationRuleRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[DeviationRuleRead]",
+        "type": "object"
+      },
+      "Page_ReportRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReportRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Всего записей, удовлетворяющих фильтру",
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ReportRead]",
+        "type": "object"
+      },
+      "ProgressRead": {
+        "description": "Названия и плановые даты этапов — в plan-service; здесь только факт и прогноз.",
+        "properties": {
+          "as_of": {
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/StageProgress"
+            },
+            "title": "Stages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "object_id",
+          "as_of",
+          "stages"
+        ],
+        "title": "ProgressRead",
+        "type": "object"
+      },
+      "ReportCreate": {
+        "properties": {
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "period_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Первый местный день периода; по умолчанию — неделя до конца",
+            "title": "Period From"
+          },
+          "period_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Последний местный день включительно; по умолчанию — день as_of",
+            "title": "Period To"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "title": "ReportCreate",
+        "type": "object"
+      },
+      "ReportCreated": {
+        "properties": {
+          "as_of": {
+            "description": "Момент анализа, чьи выводы вошли в отчёт",
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "evidence_images": {
+            "description": "Снимков-доказательств вставлено",
+            "title": "Evidence Images",
+            "type": "integer"
+          },
+          "evidence_missing": {
+            "description": "Снимков не вставлено; причины — в разделе «Ограничения»",
+            "title": "Evidence Missing",
+            "type": "integer"
+          },
+          "generated_on": {
+            "description": "Местный день формирования — часть ключа",
+            "format": "date",
+            "title": "Generated On",
+            "type": "string"
+          },
+          "key": {
+            "description": "Ключ файла в бакете `reports`; им же читается ссылка",
+            "title": "Key",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "period_from": {
+            "format": "date",
+            "title": "Period From",
+            "type": "string"
+          },
+          "period_to": {
+            "format": "date",
+            "title": "Period To",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "summary_generated_by": {
+            "description": "`TEMPLATE` или `LLM` — источник резюме",
+            "title": "Summary Generated By",
+            "type": "string"
+          },
+          "url": {
+            "description": "Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "object_id",
+          "period_from",
+          "period_to",
+          "generated_on",
+          "created_at",
+          "size_bytes",
+          "url",
+          "as_of",
+          "summary_generated_by",
+          "evidence_images",
+          "evidence_missing"
+        ],
+        "title": "ReportCreated",
+        "type": "object"
+      },
+      "ReportRead": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "generated_on": {
+            "description": "Местный день формирования — часть ключа",
+            "format": "date",
+            "title": "Generated On",
+            "type": "string"
+          },
+          "key": {
+            "description": "Ключ файла в бакете `reports`; им же читается ссылка",
+            "title": "Key",
+            "type": "string"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "period_from": {
+            "format": "date",
+            "title": "Period From",
+            "type": "string"
+          },
+          "period_to": {
+            "format": "date",
+            "title": "Period To",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "url": {
+            "description": "Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "object_id",
+          "period_from",
+          "period_to",
+          "generated_on",
+          "created_at",
+          "size_bytes",
+          "url"
+        ],
+        "title": "ReportRead",
+        "type": "object"
+      },
+      "RunAccepted": {
+        "properties": {
+          "coalesced": {
+            "title": "Coalesced",
+            "type": "boolean"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "status",
+          "coalesced"
+        ],
+        "title": "RunAccepted",
+        "type": "object"
+      },
+      "RunCreate": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Момент, на который считается анализ. Пусто — конец последней сессии с фактами, а без фактов — момент запуска",
+            "title": "As Of"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "triggered_by": {
+            "default": "MANUAL",
+            "examples": [
+              "FACTS_UPDATED"
+            ],
+            "title": "Triggered By",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "title": "RunCreate",
+        "type": "object"
+      },
+      "RunRead": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "plan_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Version"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "stats": {
+            "title": "Stats",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "triggered_by": {
+            "title": "Triggered By",
+            "type": "string"
+          },
+          "zones_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zones Version"
+          }
+        },
+        "required": [
+          "run_id",
+          "object_id",
+          "triggered_by",
+          "as_of",
+          "plan_version",
+          "zones_version",
+          "status",
+          "started_at",
+          "finished_at",
+          "stats",
+          "error"
+        ],
+        "title": "RunRead",
+        "type": "object"
+      },
+      "StageProgress": {
+        "properties": {
+          "activity": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityDay"
+            },
+            "title": "Activity",
+            "type": "array"
+          },
+          "actual_start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Start"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "delay_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delay Days"
+          },
+          "effective_days": {
+            "title": "Effective Days",
+            "type": "number"
+          },
+          "facts": {
+            "title": "Facts",
+            "type": "object"
+          },
+          "forecast_end": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast End"
+          },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          },
+          "planned_progress": {
+            "title": "Planned Progress",
+            "type": "number"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "spi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spi"
+          },
+          "stage_id": {
+            "format": "uuid",
+            "title": "Stage Id",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage_id",
+          "actual_start",
+          "last_activity_at",
+          "effective_days",
+          "progress",
+          "planned_progress",
+          "spi",
+          "forecast_end",
+          "delay_days",
+          "status",
+          "confidence",
+          "facts",
+          "activity"
+        ],
+        "title": "StageProgress",
+        "type": "object"
+      },
+      "SummaryRead": {
+        "properties": {
+          "as_of": {
+            "description": "Момент анализа, чьи выводы пересказаны",
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "generated_by": {
+            "description": "`LLM` или `TEMPLATE` — показывать всегда (ADR-0008)",
+            "title": "Generated By",
+            "type": "string"
+          },
+          "llm_rejected": {
+            "description": "Почему текст нейросети отброшен: числа не из фактов, чужие ID, недоступность",
+            "items": {
+              "type": "string"
+            },
+            "title": "Llm Rejected",
+            "type": "array"
+          },
+          "object_id": {
+            "format": "uuid",
+            "title": "Object Id",
+            "type": "string"
+          },
+          "period_from": {
+            "format": "date",
+            "title": "Period From",
+            "type": "string"
+          },
+          "period_to": {
+            "format": "date",
+            "title": "Period To",
+            "type": "string"
+          },
+          "source": {
+            "description": "Откуда текст и почему шаблон, если нейросеть не подошла",
+            "title": "Source",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "period_from",
+          "period_to",
+          "as_of",
+          "text",
+          "generated_by",
+          "source",
+          "llm_rejected"
+        ],
+        "title": "SummaryRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Сервис сверки план-факт: отклонения D1–D10 с объяснением, прогресс, SPI и прогноз. Каждое число сопровождается фактами, на которых оно построено.",
+    "title": "analysis-service",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/analysis/deviation-rules": {
+      "get": {
+        "operationId": "list_rules_api_v1_analysis_deviation_rules_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_DeviationRuleRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Настройки D1–D10",
+        "tags": [
+          "Правила отклонений"
+        ]
+      }
+    },
+    "/api/v1/analysis/deviation-rules/{code}": {
+      "get": {
+        "operationId": "get_rule_api_v1_analysis_deviation_rules__code__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviationRuleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Настройка одного кода",
+        "tags": [
+          "Правила отклонений"
+        ]
+      },
+      "patch": {
+        "description": "Действует со следующего прогона. `X-Actor` — кто правит, попадает в журнал.",
+        "operationId": "update_rule_api_v1_analysis_deviation_rules__code__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviationRuleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviationRuleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Изменить пороги, серьёзность или тексты правила",
+        "tags": [
+          "Правила отклонений"
+        ]
+      }
+    },
+    "/api/v1/analysis/deviations": {
+      "get": {
+        "description": "Повторяющийся параметр — несколько значений: `?severity=HIGH&severity=MEDIUM`. `verdict` — `CONFIRMED` / `REJECTED`, вердикт оператора независимо от статуса: закрытое с вердиктом остаётся `RESOLVED`. `from`/`to` — эпизоды, пересекающиеся с `[from, to)`. `sort` — `last_seen_at`, `first_seen_at` или `severity`, минус — по убыванию; по умолчанию `-last_seen_at`.",
+        "operationId": "list_deviations_api_v1_analysis_deviations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Object Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Code",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "severity",
+            "required": false,
+            "schema": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Severity",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Status",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "verdict",
+            "required": false,
+            "schema": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "title": "Verdict",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "stage_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stage Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "area",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Area"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "-last_seen_at",
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_DeviationRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Лента отклонений",
+        "tags": [
+          "Отклонения"
+        ]
+      }
+    },
+    "/api/v1/analysis/deviations/{deviation_id}": {
+      "get": {
+        "operationId": "get_deviation_api_v1_analysis_deviations__deviation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Deviation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Карточка отклонения",
+        "tags": [
+          "Отклонения"
+        ]
+      },
+      "patch": {
+        "description": "`X-Actor` — кто вынес вердикт (по-русски — в URL-кодировке). `REJECTED` не открывается заново, пока условие держится непрерывно.",
+        "operationId": "set_verdict_api_v1_analysis_deviations__deviation_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Deviation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Actor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Actor"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviationVerdict"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Вердикт оператора: подтвердить или пометить ложным",
+        "tags": [
+          "Отклонения"
+        ]
+      }
+    },
+    "/api/v1/analysis/deviations/{deviation_id}/explain": {
+      "get": {
+        "operationId": "explain_deviation_api_v1_analysis_deviations__deviation_id__explain_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Deviation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Полное объяснение: правило, сессии эпизода, снимки",
+        "tags": [
+          "Отклонения"
+        ]
+      }
+    },
+    "/api/v1/analysis/objects/{object_id}/equipment": {
+      "get": {
+        "description": "Фильтр по местным датам — полуинтервал `[from, to)`.",
+        "operationId": "get_equipment_api_v1_analysis_objects__object_id__equipment_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquipmentRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Загрузка техники по дням и классам (F10)",
+        "tags": [
+          "Выводы по объекту"
+        ]
+      }
+    },
+    "/api/v1/analysis/objects/{object_id}/progress": {
+      "get": {
+        "operationId": "get_progress_api_v1_analysis_objects__object_id__progress_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Прогресс, SPI и прогноз по этапам — данные для Ганта",
+        "tags": [
+          "Выводы по объекту"
+        ]
+      }
+    },
+    "/api/v1/analysis/objects/{object_id}/status": {
+      "get": {
+        "operationId": "get_status_api_v1_analysis_objects__object_id__status_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectStatusRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Сводный статус объекта для дашборда",
+        "tags": [
+          "Выводы по объекту"
+        ]
+      }
+    },
+    "/api/v1/analysis/reports": {
+      "get": {
+        "operationId": "list_reports_api_v1_analysis_reports_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Object Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ReportRead_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Отчёты объекта, новые сверху",
+        "tags": [
+          "Отчёты"
+        ]
+      },
+      "post": {
+        "description": "Период — местные дни календаря объекта включительно. Формирование синхронное: ответ приходит с готовой ссылкой. Отчёт того же периода, сформированный в тот же день, заменяется.",
+        "operationId": "create_report_api_v1_analysis_reports_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Сформировать PDF-отчёт за период",
+        "tags": [
+          "Отчёты"
+        ]
+      }
+    },
+    "/api/v1/analysis/reports/{key}": {
+      "get": {
+        "description": "`key` — ключ из списка, вида `{object_id}/{дата}T{ЧЧММСС}-{начало}_{конец}.pdf`.",
+        "operationId": "get_report_api_v1_analysis_reports__key__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ссылка на готовый отчёт",
+        "tags": [
+          "Отчёты"
+        ]
+      }
+    },
+    "/api/v1/analysis/runs": {
+      "post": {
+        "description": "Без `wait` прогон идёт в фоне, ответ 202. С `wait=true` — 200 и результат прогона, как у `GET /runs/{id}`; ошибка прогона приходит конвертом ошибки. Если по объекту прогон уже идёт, сигнал схлопывается с ним (`coalesced: true`, номер идущего), а по его окончании запускается ровно один новый. `wait=true` в этом случае ждёт, пока прогоны по объекту закончатся, и отдаёт последний; не дождался — 202.",
+        "operationId": "create_run_api_v1_analysis_runs_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "wait",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Wait",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/RunAccepted"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RunRead"
+                    }
+                  ],
+                  "title": "Response Create Run Api V1 Analysis Runs Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Запустить прогон или подать сигнал «пересчитай»",
+        "tags": [
+          "Прогон анализа"
+        ]
+      }
+    },
+    "/api/v1/analysis/runs/{run_id}": {
+      "get": {
+        "operationId": "get_run_api_v1_analysis_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Результат прогона",
+        "tags": [
+          "Прогон анализа"
+        ]
+      }
+    },
+    "/api/v1/analysis/summary": {
+      "post": {
+        "description": "Тот же контекст и период по умолчанию, что у `POST /reports`. Текст нейросети показывается, только если каждое его число есть в фактах, а каждая ссылка — ID отклонения; иначе резюме шаблонное, а причина — в `llm_rejected`.",
+        "operationId": "create_summary_api_v1_analysis_summary_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Резюме за период: нейросеть с проверкой чисел или шаблон",
+        "tags": [
+          "Отчёты"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Процесс жив",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Готов обслуживать запросы",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

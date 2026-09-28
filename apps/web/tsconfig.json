@@ -15,7 +15,10 @@
     "skipLibCheck": true,
     "noEmit": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": {
+      "@/*": ["src/*"],
+      "@api": ["../../packages/ts-api-client/src/index.ts"]
+    }
   },
   "include": ["src", "vite.config.ts"]
 }

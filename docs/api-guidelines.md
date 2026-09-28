@@ -3,6 +3,9 @@
 Единые правила для всех сервисов. Цель — чтобы интегратор, открыв Swagger любого сервиса,
 не узнавал ничего нового: одинаковые пути, одинаковые ошибки, одинаковая пагинация.
 
+Контракты между сервисами (что именно один сервис отдаёт другому) — в
+[packages/contracts/interservice.md](../packages/contracts/interservice.md).
+
 ---
 
 ## 1. Пути и версионирование
@@ -16,12 +19,10 @@
 
 | Сервис | Префикс | Примеры |
 | :--- | :--- | :--- |
-| `plan-service` | `/api/v1/plan` | `/api/v1/plan/objects`, `/api/v1/plan/stages/{id}`, `/api/v1/plan/rules` |
-| `site-service` | `/api/v1/site` | `/api/v1/site/images`, `/api/v1/site/zones`, `/api/v1/site/sessions/{id}/facts` |
-| `analysis-service` | `/api/v1/analysis` | `/api/v1/analysis/runs`, `/api/v1/analysis/deviations` |
+| `plan-service` | `/api/v1/plan` | `/api/v1/plan/objects`, `/api/v1/plan/objects/{id}/plan`, `/api/v1/plan/stages/{id}`, `/api/v1/plan/rules` |
+| `site-service` | `/api/v1/site` | `/api/v1/site/images`, `/api/v1/site/zones`, `/api/v1/site/objects/{id}/facts` |
+| `analysis-service` | `/api/v1/analysis` | `/api/v1/analysis/runs`, `/api/v1/analysis/deviations`, `/api/v1/analysis/reports` |
 | `vision-service` | `/api/v1/vision` | `/api/v1/vision/analyze`, `/api/v1/vision/model` |
-| `pos-engine` | `/api/v1/pos` | `/api/v1/pos/generate`, `/api/v1/pos/parse-tep` |
-| `report-service` | `/api/v1/report` | `/api/v1/report/reports`, `/api/v1/report/summary` |
 
 Правила:
 
@@ -53,7 +54,7 @@
 | `400` | Некорректный запрос, не прошла валидация бизнес-правил |
 | `401` | Нет или неверный `X-API-Key` |
 | `404` | Ресурс не найден |
-| `409` | Конфликт состояния: повторная загрузка того же снимка, параллельная правка ревизии |
+| `409` | Конфликт состояния: повторная загрузка того же снимка, генерация поверх ручных правок без `force` |
 | `422` | Ошибка валидации схемы (отдаёт FastAPI, приводится к общему конверту) |
 | `503` | Недоступна зависимость (CV, БД, LLM) — с указанием, какая именно |
 
@@ -66,10 +67,13 @@
 - Дробные — числа, а не строки. Доли и вероятности — `0…1`, не проценты.
 - `null` означает «значение неизвестно», отсутствие поля — «поле неприменимо».
   Пустой список — всегда `[]`, никогда `null`.
+- Потребитель игнорирует неизвестные поля ответа: поставщик вправе добавлять поля без
+  согласования.
 - Enum-значения — `SCREAMING_SNAKE_CASE`.
   **Исключение: коды классов техники — `lower_snake_case`** (`tower_crane`, `dump_truck`),
-  потому что они совпадают с метками CV-модели и с ключами в `required`/`allowed`/`signature`.
-  Полный перечень — `packages/contracts/enums.yaml`, он единственный источник истины.
+  потому что они совпадают с метками CV-модели и с ключами в правилах этапов.
+  Перечисления — `packages/contracts/enums.yaml`, классы техники —
+  `packages/contracts/equipment_classes.yaml`.
 
 ## 4. Списки и фильтрация
 
@@ -100,7 +104,7 @@ GET /api/v1/analysis/deviations?object_id=...&severity=HIGH&status=NEW&from=2026
 {
   "error": {
     "code": "STAGE_RULE_NOT_FOUND",
-    "message": "Правило для вехи не найдено",
+    "message": "Правило для этапа не найдено",
     "details": { "stage_id": "7b1f-..." },
     "request_id": "01JB2K..."
   }
@@ -120,8 +124,11 @@ GET /api/v1/analysis/deviations?object_id=...&severity=HIGH&status=NEW&from=2026
 | :--- | :--- | :--- |
 | `X-API-Key` | вход | Аутентификация; обязателен для `/api/v1/**` |
 | `X-Request-Id` | вход/выход | Создаётся в gateway, если не передан; пробрасывается во все вызовы |
-| `Idempotency-Key` | вход | Необязательный; для `POST /site/images` и `POST /analysis/runs` защищает от дублей при ретраях |
+| `X-Actor` | вход | Необязательный: имя оператора для полей `verdict_by` и журнала правок. Заголовки HTTP — только ASCII, поэтому имя по-русски передаётся в URL-кодировке (`encodeURIComponent`), сервис его раскодирует |
 | `Location` | выход | При `201` — адрес созданного ресурса |
+
+Отдельного заголовка идемпотентности нет. Повторная загрузка снимка распознаётся по sha256,
+а прогон анализа идемпотентен по построению (раздел 8).
 
 ## 7. Загрузка файлов
 
@@ -132,19 +139,20 @@ GET /api/v1/analysis/deviations?object_id=...&severity=HIGH&status=NEW&from=2026
 ```json
 {
   "accepted": [{"image_id": "...", "file": "cam-north/IMG_0042.jpg", "captured_at": "2026-10-20T09:03:00Z"}],
-  "rejected": [{"file": "IMG_0043.jpg", "code": "NO_TIMESTAMP", "message": "Не удалось определить время съёмки"}]
+  "rejected": [{"file": "IMG_0043.jpg", "code": "IMAGE_ALREADY_EXISTS", "message": "Этот снимок уже загружен"}]
 }
 ```
 
 Отклонённый файл — не ошибка запроса. Пакет из 200 снимков не должен падать целиком из-за
-одного плохого кадра.
+одного плохого кадра. Снимок без распознанного времени не отклоняется: он принимается
+со статусом `NEEDS_TIME` и ждёт ручного ввода.
 
 ## 8. Идемпотентность и повторные вызовы
 
 | Операция | Как обеспечивается |
 | :--- | :--- |
-| Загрузка снимка | `sha256` содержимого, уникальный в паре с объектом; повтор → `409` + id существующего |
-| Прогон анализа | Повторный прогон на тех же версиях плана/правил/зон обновляет отклонения, не дублируя их |
+| Загрузка снимка | `sha256` содержимого, уникальный в паре с объектом; повтор → в `rejected` с `IMAGE_ALREADY_EXISTS` и id существующего |
+| Прогон анализа | Результат зависит только от плана, фактов и `as_of`; повтор обновляет отклонения, не дублируя их; сигналы схлопываются |
 | Генерация плана | Без `force=true` не затирает ручные правки, возвращает `409` |
 | Задачи воркера | Источник истины — `image.status`, не очередь; повторная задача безопасна |
 
@@ -153,109 +161,26 @@ GET /api/v1/analysis/deviations?object_id=...&severity=HIGH&status=NEW&from=2026
 | Путь | Назначение |
 | :--- | :--- |
 | `GET /health` | Процесс жив. Без авторизации, без обращений к зависимостям, отвечает быстрее 50 мс |
-| `GET /health/ready` | Готов обслуживать: БД отвечает, MinIO доступен, критичные зависимости живы |
+| `GET /health/ready` | Готов обслуживать: БД отвечает, S3 доступен, критичные зависимости живы |
 | `GET /docs`, `GET /redoc`, `GET /openapi.json` | Документация сервиса |
 | `GET /docs` на gateway | Сводный Swagger с выбором сервиса из списка |
 
 ```json
 {"status": "healthy", "service": "site-service", "version": "0.3.1",
- "checks": {"db": "ok", "minio": "ok", "vision": "ok"}}
+ "checks": {"db": "ok", "s3": "ok", "vision": "ok"}}
 ```
 
 ## 10. Контракты как артефакт
 
+- Межсервисные контракты описаны в `packages/contracts/interservice.md` раньше кода. Любое их
+  изменение начинается с этого файла.
 - Снапшоты OpenAPI всех сервисов лежат в `packages/contracts/openapi/<service>.json`
   и **коммитятся**. `make contracts` их пересобирает; расхождение снапшота с кодом —
   ошибка сборки. Так изменение контракта невозможно протащить незаметно.
 - TS-клиент для фронтенда генерируется из этих же снапшотов в `packages/ts-api-client`.
-- Общие enum-ы — `packages/contracts/enums.yaml`; дублировать их списком в коде запрещено.
+- Перечисления — `packages/contracts/enums.yaml`, классы техники —
+  `packages/contracts/equipment_classes.yaml`; дублировать их списком в коде запрещено
+  (кроме CHECK-ограничений БД).
 - Доменные события (`packages/contracts/events.md`) описывают переходы состояний.
   Сейчас они реализованы прямыми вызовами, но их имена и полезная нагрузка уже
   зафиксированы — это готовая точка перехода на брокер.
-
-## 11. Ключевые межсервисные контракты
-
-Два запроса, вокруг которых построена вся методика. Их формат менять нельзя без ADR.
-
-### 11.1. План на дату — `GET /api/v1/plan/objects/{id}/stages?active_on=2026-10-20`
-
-```json
-{
-  "object_id": "0f3a...",
-  "active_on": "2026-10-20",
-  "plan_revision": 3,
-  "rules_version": 2,
-  "items": [
-    {
-      "id": "st_pit",
-      "code": "12.3.1",
-      "name": "Разработка котлована",
-      "phase": "SUBSTRUCTURE",
-      "zone_type": "PIT",
-      "plan_start": "2026-10-15",
-      "plan_end": "2026-11-20",
-      "norm_duration_days": 36,
-      "is_critical": true,
-      "predecessors": [{"stage_id": "st_prep", "type": "FS", "lag_days": 0}],
-      "rule": {
-        "id": "rl_pit",
-        "version": 2,
-        "required": {"excavator": 1, "dump_truck": 2},
-        "allowed": ["bulldozer", "loader"],
-        "signature": ["excavator", "dump_truck"],
-        "min_sessions": 2
-      }
-    }
-  ]
-}
-```
-
-### 11.2. Факт по сессии — `GET /api/v1/site/sessions/{id}/facts`
-
-```json
-{
-  "session_id": "se_20261020_0900",
-  "object_id": "0f3a...",
-  "window_start": "2026-10-20T09:00:00Z",
-  "window_end": "2026-10-20T09:30:00Z",
-  "is_working_time": true,
-  "images_total": 4,
-  "cameras": ["cam-north", "cam-gate"],
-  "zones_version": 5,
-  "model_version": "yolo11s-lct-v3",
-  "zones": [
-    {
-      "zone_id": "zn_pit",
-      "zone_type": "PIT",
-      "name": "Котлован",
-      "visibility": {"status": "OK", "coverage": 0.92, "reason": null},
-      "equipment": [
-        {
-          "equipment_class": "excavator",
-          "count": 1, "working": 1, "idle": 0,
-          "evidence": [{"image_id": "im_1", "detection_id": "dt_7", "conf": 0.91}]
-        },
-        {"equipment_class": "dump_truck", "count": 0, "working": 0, "idle": 0, "evidence": []}
-      ]
-    },
-    {
-      "zone_id": "zn_gate",
-      "zone_type": "ENTRY_GATE",
-      "name": "Въезд",
-      "visibility": {"status": "BLIND", "coverage": 0.0, "reason": "NO_IMAGES"},
-      "equipment": []
-    }
-  ],
-  "stage_observation": {"stage_label": "PIT", "conf": 0.78, "floors_estimate": 0},
-  "totals": {"excavator": 1, "dump_truck": 0}
-}
-```
-
-Важные свойства второго контракта:
-
-- `count` — **после дедупликации между камерами** (максимум по камере, не сумма);
-- `evidence` присутствует всегда, даже при `count = 0` (пустой список), чтобы потребитель
-  не делал отдельный запрос;
-- `visibility` отдаётся по каждой зоне, включая полностью невидимые — это вход для D10;
-- `zones_version` и `model_version` позволяют `analysis-service` понять, на каких данных
-  построен вывод, и переиграть его при изменении.

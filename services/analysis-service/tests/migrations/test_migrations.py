@@ -35,4 +35,14 @@ def test_откат_до_нуля_и_накат_обратно(alembic_config, m
 
     command.upgrade(alembic_config, "head")
     tables_at_head = _table_names(migrated_database)
-    assert {"analysis_run", "deviation", "deviation_rule", "stage_fact"} <= tables_at_head
+    assert {
+        "analysis_run",
+        "deviation",
+        "deviation_rule",
+        "stage_fact",
+        "daily_activity",
+        "daily_equipment",
+        "object_status",
+    } <= tables_at_head
+    # Вердикт оператора хранится в самом отклонении.
+    assert "deviation_feedback" not in tables_at_head

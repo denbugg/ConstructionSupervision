@@ -1,0 +1,11 @@
+{
+  "name": "@lct/ts-api-client",
+  "private": true,
+  "description": "Типы API, сгенерированные из снапшотов OpenAPI (scripts/contracts.py)",
+  "type": "module",
+  "types": "src/index.ts",
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3"
+  }
+}

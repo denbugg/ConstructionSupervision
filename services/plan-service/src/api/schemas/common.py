@@ -1,35 +1,21 @@
-"""Общие элементы контракта. Значения enum — из packages/contracts/enums.yaml."""
+"""Перечисления контракта — из packages/contracts/enums.yaml, без копии в коде.
 
-from enum import StrEnum
+Списки значений не дублируются в Python (AGENTS.md, раздел 7): типы `Literal` строятся
+из enums.yaml при старте. Swagger по-прежнему показывает допустимые значения, а новое
+значение — строка в enums.yaml и перезапуск, без правки кода.
+"""
 
+from typing import Literal
 
-class ObjectType(StrEnum):
-    RESIDENTIAL_MONOLITH = "RESIDENTIAL_MONOLITH"
-    RESIDENTIAL_PANEL = "RESIDENTIAL_PANEL"
-    PUBLIC_BUILDING = "PUBLIC_BUILDING"
-    ROAD = "ROAD"
+from src.reference import reference
 
+_ENUMS = reference().enums
 
-class ObjectLifecycle(StrEnum):
-    DRAFT = "DRAFT"
-    ACTIVE = "ACTIVE"
-    ARCHIVED = "ARCHIVED"
-
-
-class ConstructionPhase(StrEnum):
-    PREPARATORY = "PREPARATORY"
-    SUBSTRUCTURE = "SUBSTRUCTURE"
-    SUPERSTRUCTURE = "SUPERSTRUCTURE"
-    ENVELOPE_ROOF = "ENVELOPE_ROOF"
-    NETWORKS = "NETWORKS"
-    LANDSCAPING = "LANDSCAPING"
-
-
-class ZoneType(StrEnum):
-    PIT = "PIT"
-    BUILDING_FOOTPRINT = "BUILDING_FOOTPRINT"
-    PERIMETER = "PERIMETER"
-    ENTRY_GATE = "ENTRY_GATE"
-    STORAGE = "STORAGE"
-    DANGER = "DANGER"
-    ROAD = "ROAD"
+ObjectType = Literal[_ENUMS["object_type"]]
+ObjectLifecycle = Literal[_ENUMS["object_lifecycle"]]
+ConstructionPhase = Literal[_ENUMS["construction_phase"]]
+ZoneType = Literal[_ENUMS["zone_type"]]
+EquipmentGroup = Literal[_ENUMS["equipment_group"]]
+StageLabel = Literal[_ENUMS["stage_label"]]
+StageSource = Literal[_ENUMS["stage_source"]]
+DependencyType = Literal[_ENUMS["dependency_type"]]

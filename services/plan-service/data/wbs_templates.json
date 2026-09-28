@@ -1,0 +1,203 @@
+{
+  "_about": [
+    "Шаблоны этапов по типам объектов: из них импорт и генератор берут фазу, тип участка, визуальную стадию, связи и правило «этап → техника».",
+    "Этапы, коды работ и правила (обязательная, допустимая техника, сигнатура) — таблица ТЗ, п. 5.2. Классы — коды из equipment_classes.yaml. «Автовышка» из строки «Стены, кровля, фасад» не перенесена: такого класса нет.",
+    "Тип участка, визуальная стадия и связи — наше экспертное допущение по столбцу «Сигнатура факта» той же таблицы, а не норматив.",
+    "Сигнатура «любой из» (например, «каток / асфальтоукладчик») не выражается: все классы signature.equipment должны появиться одновременно. Берётся первый класс.",
+    "share — длительность этапа в долях его периода таблицы 1 МРР (mrr_norms.json, phase_columns) для генератора. У этапов, идущих подряд, доли в сумме дают 1; этап, идущий параллельно, берёт свою долю того же периода. Доли — наше экспертное допущение; для подземной части — пример из ТЗ, п. 8: котлован 35 %, основание 10 %, плита и стены 45 %, гидроизоляция и засыпка 10 %.",
+    "piles: true — длительность этапа не доля, а время устройства свай по МРР, п. 5.1.6 (добавляется к подземной части). Без свай этап в график не попадает, его последователи связываются с его предшественниками.",
+    "min_sessions правила не задаётся: действует значение по умолчанию из stage_rule."
+  ],
+  "RESIDENTIAL_MONOLITH": [
+    {
+      "code": "10.4-10.8",
+      "name": "Подготовка территории: снос, вырубка, мусор",
+      "work_codes": ["10.4", "10.5", "10.6", "10.7", "10.8"],
+      "phase": "PREPARATORY",
+      "zone_type": "BUILDING_FOOTPRINT",
+      "visual_stage": null,
+      "share": 0.6,
+      "predecessors": [],
+      "rule": {
+        "required": [{"any_of": ["excavator"], "min": 1}, {"any_of": ["dump_truck"], "min": 1}],
+        "allowed": ["bulldozer", "loader", "truck_crane"],
+        "signature": {"equipment": ["excavator", "dump_truck"], "stage_label": null}
+      }
+    },
+    {
+      "code": "10.11",
+      "name": "Обустройство площадки",
+      "work_codes": ["10.11"],
+      "phase": "PREPARATORY",
+      "zone_type": "PERIMETER",
+      "visual_stage": null,
+      "share": 1.0,
+      "predecessors": [{"code": "10.4-10.8", "type": "SS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["manipulator_crane", "truck"], "min": 1}],
+        "allowed": ["truck_crane", "dump_truck", "roller"],
+        "signature": {"equipment": ["manipulator_crane"], "stage_label": null}
+      }
+    },
+    {
+      "code": "12.3.2",
+      "name": "Ограждение котлована, сваи",
+      "work_codes": ["12.3.2", "12.3.5", "12.3.6"],
+      "phase": "SUBSTRUCTURE",
+      "zone_type": "PIT",
+      "visual_stage": "PILES",
+      "share": null,
+      "piles": true,
+      "predecessors": [
+        {"code": "10.4-10.8", "type": "FS", "lag_days": 0},
+        {"code": "10.11", "type": "FS", "lag_days": 0}
+      ],
+      "rule": {
+        "required": [{"any_of": ["pile_driver"], "min": 1}],
+        "allowed": ["truck_crane", "concrete_mixer", "concrete_pump", "excavator"],
+        "signature": {"equipment": ["pile_driver"], "stage_label": null}
+      }
+    },
+    {
+      "code": "12.3.1",
+      "name": "Разработка котлована",
+      "work_codes": ["12.3.1", "12.3.7"],
+      "phase": "SUBSTRUCTURE",
+      "zone_type": "PIT",
+      "visual_stage": "PIT",
+      "share": 0.35,
+      "predecessors": [{"code": "12.3.2", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["excavator"], "min": 1}, {"any_of": ["dump_truck"], "min": 2}],
+        "allowed": ["bulldozer", "loader"],
+        "signature": {"equipment": ["excavator", "dump_truck"], "stage_label": null}
+      }
+    },
+    {
+      "code": "12.3.3",
+      "name": "Основание: песок, щебень, бетонная подготовка",
+      "work_codes": ["12.3.3"],
+      "phase": "SUBSTRUCTURE",
+      "zone_type": "PIT",
+      "visual_stage": "PIT",
+      "share": 0.1,
+      "predecessors": [{"code": "12.3.1", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["dump_truck"], "min": 1}, {"any_of": ["roller", "bulldozer"], "min": 1}],
+        "allowed": ["loader", "concrete_mixer"],
+        "signature": {"equipment": ["roller"], "stage_label": null}
+      }
+    },
+    {
+      "code": "монтаж-крана",
+      "name": "Монтаж башенного крана",
+      "work_codes": [],
+      "phase": "SUBSTRUCTURE",
+      "zone_type": "BUILDING_FOOTPRINT",
+      "visual_stage": null,
+      "share": 0.1,
+      "predecessors": [{"code": "12.3.1", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["truck_crane"], "min": 1}],
+        "allowed": ["truck"],
+        "signature": {"equipment": ["truck_crane", "tower_crane"], "stage_label": null}
+      }
+    },
+    {
+      "code": "12.3.4",
+      "name": "Фундаментная плита, монолит ниже 0",
+      "work_codes": ["12.3.4", "12.3.9"],
+      "phase": "SUBSTRUCTURE",
+      "zone_type": "PIT",
+      "visual_stage": "FOUNDATION",
+      "share": 0.45,
+      "predecessors": [{"code": "12.3.3", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["concrete_mixer"], "min": 1}, {"any_of": ["concrete_pump"], "min": 1}],
+        "allowed": ["tower_crane", "truck_crane", "truck"],
+        "signature": {"equipment": ["concrete_mixer", "concrete_pump"], "stage_label": null}
+      }
+    },
+    {
+      "code": "12.3.10",
+      "name": "Гидроизоляция, обратная засыпка",
+      "work_codes": ["12.3.10", "12.3.7"],
+      "phase": "SUBSTRUCTURE",
+      "zone_type": "PIT",
+      "visual_stage": "FOUNDATION",
+      "share": 0.1,
+      "predecessors": [{"code": "12.3.4", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["excavator", "loader"], "min": 1}, {"any_of": ["dump_truck"], "min": 1}],
+        "allowed": ["roller"],
+        "signature": {"equipment": ["dump_truck"], "stage_label": "FOUNDATION"}
+      }
+    },
+    {
+      "code": "12.4.4",
+      "name": "Надземный каркас",
+      "work_codes": ["12.4.4", "12.4.28", "12.4.29"],
+      "phase": "SUPERSTRUCTURE",
+      "zone_type": "BUILDING_FOOTPRINT",
+      "visual_stage": "FRAME",
+      "share": 0.6,
+      "predecessors": [
+        {"code": "12.3.4", "type": "FS", "lag_days": 0},
+        {"code": "монтаж-крана", "type": "FS", "lag_days": 0}
+      ],
+      "rule": {
+        "required": [{"any_of": ["tower_crane"], "min": 1}],
+        "allowed": ["concrete_mixer", "concrete_pump", "truck"],
+        "signature": {"equipment": ["tower_crane"], "stage_label": "FRAME"}
+      }
+    },
+    {
+      "code": "12.4.8",
+      "name": "Стены, кровля, фасад",
+      "work_codes": ["12.4.8", "12.4.11", "12.4.31"],
+      "phase": "ENVELOPE_ROOF",
+      "zone_type": "BUILDING_FOOTPRINT",
+      "visual_stage": "FACADE",
+      "share": 0.4,
+      "predecessors": [{"code": "12.4.4", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["tower_crane", "truck_crane", "manipulator_crane"], "min": 1}],
+        "allowed": ["truck"],
+        "signature": {"equipment": [], "stage_label": "FACADE"}
+      }
+    },
+    {
+      "code": "12.5.1",
+      "name": "Наружные сети",
+      "work_codes": ["12.5.1"],
+      "phase": "NETWORKS",
+      "zone_type": "PERIMETER",
+      "visual_stage": null,
+      "share": 0.5,
+      "predecessors": [{"code": "12.3.10", "type": "FS", "lag_days": 0}],
+      "rule": {
+        "required": [{"any_of": ["excavator"], "min": 1}],
+        "allowed": ["dump_truck", "manipulator_crane", "roller"],
+        "signature": {"equipment": ["excavator"], "stage_label": null}
+      }
+    },
+    {
+      "code": "12.7",
+      "name": "Благоустройство",
+      "work_codes": ["12.7"],
+      "phase": "LANDSCAPING",
+      "zone_type": "PERIMETER",
+      "visual_stage": "LANDSCAPING",
+      "share": 1.0,
+      "predecessors": [
+        {"code": "12.4.8", "type": "FS", "lag_days": 0},
+        {"code": "12.5.1", "type": "FS", "lag_days": 0}
+      ],
+      "rule": {
+        "required": [{"any_of": ["dump_truck"], "min": 1}, {"any_of": ["roller"], "min": 1}],
+        "allowed": ["asphalt_paver", "loader", "bulldozer"],
+        "signature": {"equipment": ["roller"], "stage_label": null}
+      }
+    }
+  ]
+}

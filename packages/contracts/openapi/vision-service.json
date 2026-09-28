@@ -1,0 +1,535 @@
+{
+  "components": {
+    "schemas": {
+      "AnalyzeResult": {
+        "properties": {
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/DetectionRead"
+            },
+            "title": "Detections",
+            "type": "array"
+          },
+          "image": {
+            "$ref": "#/components/schemas/ImageSize"
+          },
+          "inference_ms": {
+            "description": "Время моделей на снимок без скачивания и очереди",
+            "title": "Inference Ms",
+            "type": "integer"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelInfo"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/QualityRead"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StageRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`null` при `VISION_STAGE_ENABLED=false`"
+          }
+        },
+        "required": [
+          "model",
+          "image",
+          "detections",
+          "stage",
+          "quality",
+          "inference_ms"
+        ],
+        "title": "AnalyzeResult",
+        "type": "object"
+      },
+      "ClassRead": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "prompts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prompts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "code",
+          "prompts"
+        ],
+        "title": "ClassRead",
+        "type": "object"
+      },
+      "DetectionRead": {
+        "properties": {
+          "bbox": {
+            "description": "[x1, y1, x2, y2], доли кадра 0…1 от левого верхнего угла",
+            "examples": [
+              [
+                0.41,
+                0.52,
+                0.49,
+                0.63
+              ]
+            ],
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "type": "array"
+          },
+          "conf": {
+            "description": "Не ниже `VISION_DET_CONF`",
+            "title": "Conf",
+            "type": "number"
+          },
+          "equipment_class": {
+            "description": "Код из equipment_classes.yaml, включая `person`",
+            "title": "Equipment Class",
+            "type": "string"
+          }
+        },
+        "required": [
+          "equipment_class",
+          "bbox",
+          "conf"
+        ],
+        "title": "DetectionRead",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ImageSize": {
+        "properties": {
+          "height": {
+            "title": "Height",
+            "type": "integer"
+          },
+          "width": {
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ],
+        "title": "ImageSize",
+        "type": "object"
+      },
+      "ModelInfo": {
+        "properties": {
+          "classes_version": {
+            "description": "Первые 8 символов sha256 файла equipment_classes.yaml",
+            "examples": [
+              "3f9a1c2e"
+            ],
+            "title": "Classes Version",
+            "type": "string"
+          },
+          "detector": {
+            "examples": [
+              "yolov8s-worldv2"
+            ],
+            "title": "Detector",
+            "type": "string"
+          },
+          "device": {
+            "description": "Фактическое устройство инференса",
+            "examples": [
+              "cuda"
+            ],
+            "title": "Device",
+            "type": "string"
+          },
+          "stage_classifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`null` при `VISION_STAGE_ENABLED=false`",
+            "examples": [
+              "openclip-vit-b32"
+            ],
+            "title": "Stage Classifier"
+          }
+        },
+        "required": [
+          "detector",
+          "stage_classifier",
+          "device",
+          "classes_version"
+        ],
+        "title": "ModelInfo",
+        "type": "object"
+      },
+      "ModelRead": {
+        "properties": {
+          "classes": {
+            "description": "Словарь детектора из equipment_classes.yaml",
+            "items": {
+              "$ref": "#/components/schemas/ClassRead"
+            },
+            "title": "Classes",
+            "type": "array"
+          },
+          "classes_version": {
+            "description": "Первые 8 символов sha256 файла equipment_classes.yaml",
+            "examples": [
+              "3f9a1c2e"
+            ],
+            "title": "Classes Version",
+            "type": "string"
+          },
+          "det_conf": {
+            "title": "Det Conf",
+            "type": "number"
+          },
+          "det_imgsz": {
+            "title": "Det Imgsz",
+            "type": "integer"
+          },
+          "det_iou": {
+            "title": "Det Iou",
+            "type": "number"
+          },
+          "detector": {
+            "examples": [
+              "yolov8s-worldv2"
+            ],
+            "title": "Detector",
+            "type": "string"
+          },
+          "device": {
+            "description": "Фактическое устройство инференса",
+            "examples": [
+              "cuda"
+            ],
+            "title": "Device",
+            "type": "string"
+          },
+          "stage_classifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`null` при `VISION_STAGE_ENABLED=false`",
+            "examples": [
+              "openclip-vit-b32"
+            ],
+            "title": "Stage Classifier"
+          },
+          "stage_labels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Stage Labels",
+            "type": "array"
+          }
+        },
+        "required": [
+          "detector",
+          "stage_classifier",
+          "device",
+          "classes_version",
+          "classes",
+          "stage_labels",
+          "det_conf",
+          "det_iou",
+          "det_imgsz"
+        ],
+        "title": "ModelRead",
+        "type": "object"
+      },
+      "QualityRead": {
+        "properties": {
+          "blur": {
+            "description": "Размытость кадра, 0…1; больше — хуже",
+            "title": "Blur",
+            "type": "number"
+          },
+          "brightness": {
+            "description": "Средняя яркость кадра, 0…1",
+            "title": "Brightness",
+            "type": "number"
+          }
+        },
+        "required": [
+          "brightness",
+          "blur"
+        ],
+        "title": "QualityRead",
+        "type": "object"
+      },
+      "StageRead": {
+        "properties": {
+          "conf": {
+            "title": "Conf",
+            "type": "number"
+          },
+          "label": {
+            "description": "Значение `stage_label` из enums.yaml",
+            "title": "Label",
+            "type": "string"
+          },
+          "scores": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Вероятность каждой метки стадии",
+            "title": "Scores",
+            "type": "object"
+          }
+        },
+        "required": [
+          "label",
+          "conf",
+          "scores"
+        ],
+        "title": "StageRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Сервис компьютерного зрения: детекция строительной техники, стадия объекта по внешнему виду и оценка качества кадра. Состояния и зависимостей нет.",
+    "title": "vision-service",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/vision/analyze": {
+      "post": {
+        "description": "Детекция техники, стадия объекта и качество кадра за один вызов. Тело — JSON `{\"image_url\": ...}` (так вызывает site-worker) или `multipart/form-data` с полем `file` для ручной проверки. Рамки нормированы 0…1. Недоступная ссылка — `UPSTREAM_UNAVAILABLE`.",
+        "operationId": "analyze_api_v1_vision_analyze_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "image_url": {
+                    "description": "Ссылка на снимок; site-worker передаёт presigned-ссылку S3",
+                    "examples": [
+                      "http://s3:8333/images/0f3a/cam-north/2026-10-20/9e41.jpg?X-Amz-Signature=…"
+                    ],
+                    "pattern": "^https?://",
+                    "title": "Image Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "image_url"
+                ],
+                "title": "AnalyzeRequest",
+                "type": "object"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Распознать снимок",
+        "tags": [
+          "Распознавание"
+        ]
+      }
+    },
+    "/api/v1/vision/model": {
+      "get": {
+        "description": "Детектор, классификатор стадии, фактическое устройство, версия и словарь классов, пороги детектора. До окончания загрузки — `MODEL_NOT_LOADED`.",
+        "operationId": "model_api_v1_vision_model_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Api-Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Загруженные модели",
+        "tags": [
+          "Распознавание"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Процесс жив",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Готов обслуживать запросы",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

@@ -11,8 +11,7 @@ from src.api.schemas.common import ObjectLifecycle, ObjectType
 class ObjectCreate(BaseModel):
     """Создание объекта.
 
-    Тип можно не указывать: pos-engine распознаёт его из наименования при
-    генерации графика. Явное значение — принудительное переопределение.
+    Тип можно не указывать: по умолчанию объект — монолитный жилой дом.
     """
 
     name: str = Field(
@@ -23,7 +22,10 @@ class ObjectCreate(BaseModel):
     object_type: ObjectType | None = None
     address: str | None = Field(default=None, max_length=1000)
     plan_start: date | None = Field(default=None, description="Плановая дата начала СМР")
-    tep: dict = Field(default_factory=dict, description="Переопределение ТЭП, если требуется")
+    tep: dict = Field(
+        default_factory=dict,
+        description="Параметры для генератора графика: этажность, площадь, секции, сваи, сменность",
+    )
 
 
 class ObjectUpdate(BaseModel):
@@ -47,6 +49,11 @@ class ObjectRead(BaseModel):
     tep: dict
     plan_start: date | None
     status: ObjectLifecycle
-    current_revision: int = Field(description="Номер текущей ревизии плана; 0 — план не построен")
+    calendar_id: UUID | None = Field(
+        description="Рабочий календарь; при создании — DEFAULT_CALENDAR"
+    )
+    plan_version: int = Field(
+        description="Растёт при любой правке этапов, правил или календаря; 0 — план не заводился"
+    )
     created_at: datetime
     updated_at: datetime

@@ -1,0 +1,36 @@
+# Промпты OpenCLIP для стадии объекта по фото (zero-shot, F6).
+#
+# Метки — ровно `stage_label` из packages/contracts/enums.yaml; сервис сверяет наборы при
+# старте и не поднимается при расхождении. У метки несколько промптов: их текстовые эмбеддинги
+# усредняются (ансамбль промптов), это устойчивее одной формулировки. Английские промпты
+# работают заметно лучше русских.
+#
+# Промпты подобраны вручную и не откалиброваны: качество классификатора измеряется на
+# тестовом наборе (ml/README.md), а не предполагается. Правка промптов — правка данных,
+# код при этом не меняется.
+
+stage_prompts:
+  PIT:
+    - "a photo of an excavated foundation pit at a construction site"
+    - "a photo of a large dug earth pit with excavators and dump trucks"
+    - "a photo of earthworks, bare soil and a deep excavation"
+  PILES:
+    - "a photo of pile driving at a construction site"
+    - "a photo of a drilling rig installing foundation piles in a pit"
+    - "a photo of rows of concrete piles sticking out of the ground"
+  FOUNDATION:
+    - "a photo of a concrete foundation slab under construction with rebar"
+    - "a photo of reinforcement mesh and formwork for a building foundation"
+    - "a photo of a poured concrete foundation at the bottom of a pit"
+  FRAME:
+    - "a photo of a monolithic concrete building frame under construction with a tower crane"
+    - "a photo of an unfinished multi-storey concrete skeleton with bare columns and slabs"
+    - "a photo of formwork on the upper floors of a high-rise under construction"
+  FACADE:
+    - "a photo of a building under construction with facade cladding being installed"
+    - "a photo of a high-rise with windows and facade panels, scaffolding on the walls"
+    - "a photo of an almost finished apartment building with facade and glazing"
+  LANDSCAPING:
+    - "a photo of a finished apartment building with landscaping, lawns and paved paths"
+    - "a photo of paving, planting trees and installing a playground near a new building"
+    - "a photo of a completed residential building with asphalt driveways and greenery"
