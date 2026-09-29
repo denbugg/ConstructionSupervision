@@ -35,7 +35,7 @@ const NOT_EQUIPMENT = "person";
 const STAGE_LABELS = Object.keys(ru.stageLabel) as StageLabel[];
 
 /**
- * Редактор правил «этап → техника» (T31): логика — данные, а не код. Меняем правило —
+ * Редактор правил «этап → техника»: логика — данные, а не код. Меняем правило —
  * анализ пересчитывает ленту, и видно, какие отклонения исчезли или появились.
  */
 export function RulesEditorScreen() {

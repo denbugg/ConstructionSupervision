@@ -48,9 +48,10 @@ class Settings(BaseServiceSettings):
     confidence_medium_visible: float = 0.5
     unknown_blind_share: float = 0.5
 
-    # Отчёты (README, раздел 5): бакет в S3-хранилище; ссылка для браузера — на публичный адрес.
+    # Отчёты (README, раздел 5): бакет в S3-хранилище; ссылка для браузера — путь под
+    # S3_PUBLIC_PATH, который gateway отдаёт из хранилища (ADR-0017).
     s3_endpoint: str = "http://s3:8333"
-    s3_public_endpoint: str = "http://localhost:8333"
+    s3_public_path: str = "/storage"
     s3_access_key: str = "s3admin"
     s3_secret_key: str = "s3admin"
     s3_bucket_reports: str = "reports"

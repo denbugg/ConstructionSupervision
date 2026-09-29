@@ -5,6 +5,8 @@ import { RequisiteFields, TepFields } from "@/features/objects/ObjectFields";
 import {
   draftFromObject,
   draftProblems,
+  hasGenerator,
+  NO_GENERATOR_NOTE,
   type Lifecycle,
   type ObjectDraft,
 } from "@/features/objects/objectDraft";
@@ -43,6 +45,14 @@ export function CreateObjectDialog({ open, onClose }: { open: boolean; onClose: 
   const create = useCreateObject();
   const toast = useToast();
   const navigate = useNavigate();
+
+  const generator = hasGenerator(draft.objectType);
+  // Сменили тип на тот, где расчёта нет, — выбор «По нормам МРР» переходит на файл, а не
+  // остаётся невидимо выбранным и не падает после создания объекта.
+  const changeDraft = (next: ObjectDraft) => {
+    if (!hasGenerator(next.objectType) && source === "generate") setSource("import");
+    setDraft(next);
+  };
 
   const problems = draftProblems(draft, source === "generate");
   const fileMissing = source === "import" && file == null;
@@ -98,29 +108,36 @@ export function CreateObjectDialog({ open, onClose }: { open: boolean; onClose: 
       }
     >
       <div className="space-y-6">
-        <RequisiteFields draft={draft} problems={shown} onChange={setDraft} />
+        <RequisiteFields draft={draft} problems={shown} onChange={changeDraft} />
 
         <div className="space-y-2.5">
           <p className="text-[13px] font-medium text-ink/85">График работ</p>
           <div className="grid gap-2 sm:grid-cols-3">
-            {SOURCES.map((option) => (
-              <button
-                key={option.kind}
-                type="button"
-                onClick={() => setSource(option.kind)}
-                aria-pressed={source === option.kind}
-                className={`rounded-xl p-3 text-left ring-1 transition ${
-                  source === option.kind ? "bg-accent/[0.06] ring-2 ring-accent" : "ring-ink/15 hover:ring-ink/30"
-                }`}
-              >
-                <span className="flex items-center gap-2 font-medium">
-                  <Icon name={option.icon} size={16} className={source === option.kind ? "text-accent" : "text-muted"} />
-                  {option.title}
-                </span>
-                <span className="mt-1 block text-xs text-muted">{option.text}</span>
-              </button>
-            ))}
+            {SOURCES.map((option) => {
+              const unavailable = option.kind === "generate" && !generator;
+              return (
+                <button
+                  key={option.kind}
+                  type="button"
+                  onClick={() => setSource(option.kind)}
+                  disabled={unavailable}
+                  aria-pressed={source === option.kind}
+                  className={`rounded-xl p-3 text-left ring-1 transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                    source === option.kind ? "bg-accent/[0.06] ring-2 ring-accent" : "ring-ink/15 enabled:hover:ring-ink/30"
+                  }`}
+                >
+                  <span className="flex items-center gap-2 font-medium">
+                    <Icon name={option.icon} size={16} className={source === option.kind ? "text-accent" : "text-muted"} />
+                    {option.title}
+                  </span>
+                  <span className="mt-1 block text-xs text-muted">
+                    {unavailable ? "Недоступно для этого типа объекта" : option.text}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+          {!generator && <p className="text-xs text-muted">{NO_GENERATOR_NOTE}</p>}
           {source === "import" && (
             <Field label="Файл графика" error={tried && fileMissing ? "Выберите файл" : null}>
               <input
@@ -133,12 +150,14 @@ export function CreateObjectDialog({ open, onClose }: { open: boolean; onClose: 
           )}
         </div>
 
-        <div className="space-y-2.5">
-          <p className="text-[13px] font-medium text-ink/85">
-            Параметры объекта (ТЭП){source === "generate" && <span className="text-accent"> — нужны для генерации</span>}
-          </p>
-          <TepFields tep={draft.tep} problems={shown} onChange={(tep) => setDraft({ ...draft, tep })} />
-        </div>
+        {generator && (
+          <div className="space-y-2.5">
+            <p className="text-[13px] font-medium text-ink/85">
+              Параметры объекта (ТЭП){source === "generate" && <span className="text-accent"> — нужны для генерации</span>}
+            </p>
+            <TepFields tep={draft.tep} problems={shown} onChange={(tep) => setDraft({ ...draft, tep })} />
+          </div>
+        )}
 
         {create.isError && <ErrorBox error={create.error} />}
       </div>
@@ -210,10 +229,12 @@ export function EditObjectDialog({
             </select>
           </Field>
         )}
-        <div className="space-y-2.5">
-          <p className="text-[13px] font-medium text-ink/85">Параметры объекта (ТЭП)</p>
-          <TepFields tep={draft.tep} problems={problems} onChange={(tep) => setDraft({ ...draft, tep })} />
-        </div>
+        {hasGenerator(draft.objectType) && (
+          <div className="space-y-2.5">
+            <p className="text-[13px] font-medium text-ink/85">Параметры объекта (ТЭП)</p>
+            <TepFields tep={draft.tep} problems={problems} onChange={(tep) => setDraft({ ...draft, tep })} />
+          </div>
+        )}
         {update.isError && <p className="text-sm text-red-700">{errorText(update.error)}</p>}
       </div>
     </Modal>

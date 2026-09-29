@@ -1,16 +1,16 @@
 """Хранилище отчётов (S3, бакет `reports`). Единственное место с кодом S3 в analysis.
 
-Клиент `minio` синхронный, поэтому вызовы уходят в пул потоков. Ссылка для браузера
-подписывается вторым клиентом на публичный адрес: подпись привязана к хосту, и
-`s3:8333` браузер не откроет (architecture.md, 7.2). Повторяет клиент site-service:
-импортировать код чужого сервиса нельзя (AGENTS.md, раздел 6).
+Клиент `minio` синхронный, поэтому вызовы уходят в пул потоков. Ссылка для браузера —
+относительный путь на gateway, подписанный на внутренний адрес (ADR-0017, architecture.md,
+7.2). Повторяет клиент site-service: импортировать код чужого сервиса нельзя (CONTRIBUTING.md,
+раздел 6).
 """
 
 import asyncio
 import io
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
 
 from lct_common import UpstreamError, get_logger
 from minio import Minio
@@ -49,14 +49,14 @@ class ReportStorage:
         self,
         *,
         endpoint: str,
-        public_endpoint: str,
+        public_path: str,
         access_key: str,
         secret_key: str,
         bucket: str,
         presign_ttl_s: int,
     ) -> None:
         self._client = _client(endpoint, access_key, secret_key)
-        self._public = _client(public_endpoint, access_key, secret_key)
+        self._public_path = public_path.rstrip("/")
         self._bucket = bucket
         self._ttl = timedelta(seconds=presign_ttl_s)
 
@@ -99,10 +99,17 @@ class ReportStorage:
         return await self._call(stat)
 
     async def presigned_url(self, key: str) -> str:
-        """Ссылка для браузера на публичный адрес хранилища, живёт S3_PRESIGN_TTL_S."""
-        return await self._call(
-            lambda: self._public.presigned_get_object(self._bucket, key, expires=self._ttl)
+        """Ссылка для браузера: путь под S3_PUBLIC_PATH на том же адресе, что и интерфейс.
+
+        Хост в ссылку не попадает, поэтому она открывается с любого адреса стенда. Подпись
+        сделана на внутренний адрес, и gateway передаёт хранилищу именно его в `Host`.
+        """
+        signed = urlsplit(
+            await self._call(
+                lambda: self._client.presigned_get_object(self._bucket, key, expires=self._ttl)
+            )
         )
+        return f"{self._public_path}{signed.path}?{signed.query}"
 
     async def _call(self, operation):
         try:

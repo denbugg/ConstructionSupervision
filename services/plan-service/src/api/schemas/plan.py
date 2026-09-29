@@ -1,7 +1,7 @@
 """«Весь план» объекта — межсервисный контракт 1 (packages/contracts/interservice.md, раздел 1).
 
 Форма ответа — строго по контракту: analysis-service разбирает его своей моделью.
-Поля можно только добавлять (AGENTS.md, правило 9).
+Поля можно только добавлять (CONTRIBUTING.md, правило 9).
 """
 
 from datetime import date

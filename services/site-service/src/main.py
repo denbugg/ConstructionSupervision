@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     app.state.session_factory = create_session_factory(engine)
     app.state.storage = ImageStorage(
         endpoint=settings.s3_endpoint,
-        public_endpoint=settings.s3_public_endpoint,
+        public_path=settings.s3_public_path,
         access_key=settings.s3_access_key,
         secret_key=settings.s3_secret_key,
         bucket=settings.s3_bucket_images,

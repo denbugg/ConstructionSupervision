@@ -1,4 +1,4 @@
-"""Шаг 2 авторазметки: класс рамки называет Gemma по вырезке, итог — LabelMe на проверку (H5).
+"""Шаг 2 авторазметки: класс рамки называет Gemma по вырезке, итог — LabelMe на проверку.
 
     python ml/prepare/prelabel.py            # detections.json → lct-test/review
     python ml/prepare/prelabel.py --force    # перезаписать уже проверенные файлы

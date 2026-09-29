@@ -19,6 +19,7 @@ flowchart LR
     GW -->|"/api/v1/site/"| SITE["site-service"]
     GW -->|"/api/v1/analysis/"| ANL["analysis-service"]
     GW -->|"/api/v1/vision/"| VIS["vision-service"]
+    GW -->|"/storage/"| S3["s3 (снимки, отчёты)"]
 ```
 
 ## 3. Маршрутизация
@@ -34,15 +35,25 @@ flowchart LR
 | `/api/v1/analysis/…` | `analysis-service:8000`, включая отчёты `/api/v1/analysis/reports` |
 | `/api/v1/vision/…` | `vision-service:8000` (закрыт для внешнего доступа в `prod`) |
 | прочие `/api/…` | `404 NOT_FOUND` в едином конверте ошибки, без проксирования |
+| `/storage/…` | `s3:8333` без префикса `/storage`, с `Host: s3:8333` — снимки и отчёты по presigned-ссылкам |
 | `/docs` | Сводный Swagger UI с выбором сервиса из выпадающего списка |
 | `/health` | Живость самого gateway |
 
 Добавление нового ресурса **не требует правки gateway** — конфигурация знает только
 о сервисах, а не об их эндпоинтах.
 
-Снимки и отчёты через gateway не идут: браузер открывает их по presigned-ссылкам прямо из
-S3-хранилища, подписанным на публичный адрес `S3_PUBLIC_ENDPOINT`
-([docs/architecture.md](../../docs/architecture.md), раздел 7.2).
+Снимки и отчёты браузер берёт через gateway ([ADR-0017](../../docs/decisions/0017-storage-through-gateway.md)).
+Сервисы подписывают presigned-ссылку на внутренний адрес `S3_ENDPOINT` и отдают путь без хоста —
+`/storage/<бакет>/<ключ>?X-Amz-…`. Браузер открывает его по тому адресу, по которому открыт
+интерфейс, gateway отрезает `/storage` и передаёт запрос в хранилище. Подпись S3 проверяет
+`Host`, путь и параметры, поэтому:
+
+- путь и параметры уходят из `$request_uri` байт в байт, без раскодирования;
+- `Host` подменяется на `s3:8333` — он обязан совпадать с хостом из `S3_ENDPOINT`;
+- `X-Forwarded-*`, `Forwarded`, `Authorization` и `Cookie` не передаются: SeaweedFS учитывает
+  `X-Forwarded-Host/Proto/Port` при проверке подписи, а туннель (cloudflared) их ставит.
+
+Ключ API для этих путей не нужен: доступ даёт сама подпись, и живёт она `S3_PRESIGN_TTL_S`.
 
 ## 4. Что делает gateway
 

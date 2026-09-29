@@ -863,7 +863,7 @@
             "type": "string"
           },
           "url": {
-            "description": "Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S",
+            "description": "Presigned-ссылка: путь без хоста под S3_PUBLIC_PATH (`/storage/reports/…`), открывается относительно адреса gateway; живёт S3_PRESIGN_TTL_S",
             "title": "Url",
             "type": "string"
           }
@@ -923,7 +923,7 @@
             "type": "integer"
           },
           "url": {
-            "description": "Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S",
+            "description": "Presigned-ссылка: путь без хоста под S3_PUBLIC_PATH (`/storage/reports/…`), открывается относительно адреса gateway; живёт S3_PRESIGN_TTL_S",
             "title": "Url",
             "type": "string"
           }

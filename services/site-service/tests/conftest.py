@@ -120,7 +120,7 @@ class FakeStorage:
         self.objects[key] = (content, content_type)
 
     async def presigned_url(self, key: str) -> str:
-        return f"http://localhost:8333/images/{key}?X-Amz-Signature=test"
+        return f"/storage/images/{key}?X-Amz-Signature=test"
 
     async def internal_url(self, key: str) -> str:
         return f"http://s3:8333/images/{key}?X-Amz-Signature=test"

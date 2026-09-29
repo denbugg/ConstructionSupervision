@@ -149,8 +149,8 @@ async def client(session, analysis) -> AsyncIterator:
 
 @pytest.fixture
 async def demo_stage(client, session) -> dict:
-    """Объект с одним этапом «Разработка котлована». Импорт графика появится в T19,
-    поэтому этап пишется в базу напрямую."""
+    """Объект с одним этапом «Разработка котлована», записанным в базу напрямую: тестам
+    этапов не нужен импорт графика целиком."""
     from datetime import date
     from uuid import UUID
 

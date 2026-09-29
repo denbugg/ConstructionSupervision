@@ -52,7 +52,10 @@ class ReportRead(BaseModel):
     generated_on: dt.date = Field(description="Местный день формирования — часть ключа")
     created_at: dt.datetime
     size_bytes: int
-    url: str = Field(description="Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S")
+    url: str = Field(
+        description="Presigned-ссылка: путь без хоста под S3_PUBLIC_PATH (`/storage/reports/…`), "
+        "открывается относительно адреса gateway; живёт S3_PRESIGN_TTL_S"
+    )
 
     @classmethod
     def of(cls, report: ReportFile) -> "ReportRead":

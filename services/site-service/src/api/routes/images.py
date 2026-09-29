@@ -105,7 +105,7 @@ async def list_images(
     "/{image_id}",
     response_model=ImageDetail,
     summary="Снимок",
-    description="Метаданные, ссылка для браузера (`S3_PUBLIC_ENDPOINT`), рамки техники с "
+    description="Метаданные, ссылка для браузера (путь на gateway), рамки техники с "
     "точкой контакта и зоной, стадия по снимку. `link=internal` — ссылка на внутренний адрес "
     "хранилища (`S3_ENDPOINT`) для других сервисов: так снимки берёт отчёт analysis "
     "(interservice.md, контракт 6).",

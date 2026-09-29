@@ -12,7 +12,7 @@ POST /analysis/runs?wait=true → сводка отклонений.
 Снимки грузятся раньше зон: эталонным кадром камеры становится её первый снимок
 (services/site-service/README.md, раздел 9). Всё повторяемо: объект находится по имени, дубли
 снимков отклоняются по sha256, повторный импорт зон ничего не меняет. Адрес gateway и ключ —
-из .env (GATEWAY_PORT, API_KEY).
+из .env (GATEWAY_PORT, API_KEY); в контейнере tools — GATEWAY_URL.
 """
 
 import argparse
@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 
 import httpx
-from _common import ROOT, load_env, use_utf8_output
+from _common import ROOT, gateway_url, load_env, use_utf8_output
 
 SEED = ROOT / "data" / "seed"
 # Сколько снимков ещё не распознано: пока не ноль, прогон увидел бы неполные окна.
@@ -51,7 +51,7 @@ def check(resp: httpx.Response, step: str) -> dict:
 
 def connect(env: dict[str, str], actor: str) -> httpx.Client:
     """Клиент gateway: адрес и ключ из .env, `actor` — кто правит, для журналов сервисов."""
-    base = f"http://localhost:{env.get('GATEWAY_PORT', '8080')}/api/v1"
+    base = f"{gateway_url(env)}/api/v1"
     headers = {"X-API-Key": env.get("API_KEY", ""), "X-Actor": actor}
     # Прогон с ожиданием держит соединение, пока analysis не закончит (RUN_WAIT_TIMEOUT_S).
     return httpx.Client(base_url=base, headers=headers, timeout=180)
@@ -113,6 +113,12 @@ def ensure_rules(client: httpx.Client, object_id: str) -> None:
 
 def import_images(client: httpx.Client, object_id: str) -> None:
     """Все подпапки data/seed/images: первая подпапка — код камеры."""
+    # Без кадров импорт честно примет ноль файлов, и объект выйдет пустым — это не демо.
+    if not any(p.is_file() for p in (SEED / "images").glob("*/*")):
+        raise SeedError(
+            "в data/seed/images нет демо-кадров: скачайте их командой "
+            "`docker compose run --rm tools python scripts/fetch_models.py` (README, раздел 3)"
+        )
     body = check(
         client.post("/site/images/import", json={"object_id": object_id, "path": ""}),
         "загрузка снимков",

@@ -11,6 +11,7 @@
 <body>
   <div id="swagger"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js"></script>
   <script>
     // Сводная страница: один выпадающий список со спецификациями всех сервисов.
     // Сервисы, которых ещё нет, просто не загрузятся — страница от этого не ломается.
@@ -18,12 +19,18 @@
       SwaggerUIBundle({
         dom_id: "#swagger",
         deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout",
         urls: [
           { name: "plan-service",     url: "/api/v1/plan/openapi.json" },
           { name: "site-service",     url: "/api/v1/site/openapi.json" },
           { name: "analysis-service", url: "/api/v1/analysis/openapi.json" },
           { name: "vision-service",   url: "/api/v1/vision/openapi.json" }
-        ]
+        ],
+        "urls.primaryName": "plan-service"
       });
     };
   </script>

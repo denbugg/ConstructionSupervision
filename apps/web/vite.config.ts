@@ -5,8 +5,9 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // Сборка кладётся в dist/ и целиком отдаётся статикой из gateway: отдельного
-// веб-сервера у интерфейса нет. В разработке /api проксируется на тот же
-// gateway, поэтому путь запроса одинаков и в dev, и в проде.
+// веб-сервера у интерфейса нет. В разработке /api и /storage (снимки и отчёты,
+// ADR-0017) проксируются на тот же gateway, поэтому пути одинаковы в dev и в проде.
+const gateway = process.env.VITE_API_PROXY ?? "http://localhost:8080";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // Алиасы: @ → src/, @api → сгенерированные типы API. tsconfig о них знает, но резолвит
@@ -22,10 +23,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": {
-        target: process.env.VITE_API_PROXY ?? "http://localhost:8080",
-        changeOrigin: true,
-      },
+      "/api": { target: gateway, changeOrigin: true },
+      "/storage": { target: gateway, changeOrigin: true },
     },
   },
   build: { outDir: "dist", sourcemap: true },

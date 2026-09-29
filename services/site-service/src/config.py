@@ -26,10 +26,11 @@ class Settings(BaseServiceSettings):
     # Папка для POST /images/import, смонтированная только для чтения: подпапка = код камеры.
     import_dir: str = "/import"
 
-    # S3-хранилище (ADR-0016): оригиналы снимков. Внутренний адрес — для загрузки и для
-    # vision-service, публичный — для подписи ссылок, которые открывает браузер.
+    # S3-хранилище (ADR-0016): оригиналы снимков. Внутренний адрес — для загрузки, для
+    # vision-service и для подписи всех ссылок. Браузер получает путь под S3_PUBLIC_PATH:
+    # его отдаёт gateway, и ссылка открывается с любого адреса стенда (ADR-0017).
     s3_endpoint: str = "http://s3:8333"
-    s3_public_endpoint: str = "http://localhost:8333"
+    s3_public_path: str = "/storage"
     s3_access_key: str = "s3admin"
     s3_secret_key: str = "s3admin"
     s3_bucket_images: str = "images"

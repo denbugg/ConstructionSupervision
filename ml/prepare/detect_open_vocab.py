@@ -1,4 +1,4 @@
-"""Шаг 1 авторазметки: рамки-кандидаты open-vocabulary детектором YOLOE (H5).
+"""Шаг 1 авторазметки: рамки-кандидаты open-vocabulary детектором YOLOE.
 
 Запускается в образе vision-service, где есть Ultralytics (ml/README.md, «Обучение и оценка»):
 

@@ -1,5 +1,8 @@
-# Оверлей целевого стенда: видеокарта для vision-service.
+# Оверлей целевого стенда: видеокарта для vision-service и локальной LLM.
 #   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+# или один раз строкой в .env (README, раздел 3), и дальше просто docker compose …:
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.gpu.yml      # Linux, macOS
+#   COMPOSE_FILE=docker-compose.yml;docker-compose.gpu.yml      # Windows
 #
 # Оверлей, а не профиль: профиль добавляет сервисы, но не дополняет уже описанный. Docker Desktop
 # на WSL2 пробрасывает карту сам, нужен только драйвер NVIDIA для Windows (runbook.md, раздел 1).
@@ -7,10 +10,15 @@
 
 services:
   vision-service:
-    deploy:
+    deploy: &gpu
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  # Локальная LLM (профиль llm): Gemma 4 E4B занимает ~3,3 ГБ видеопамяти и помещается на 6 ГБ
+  # рядом с vision.
+  llm:
+    deploy: *gpu

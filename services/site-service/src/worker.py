@@ -50,7 +50,7 @@ async def startup(ctx: dict[str, Any]) -> None:
         create_session_factory(engine),
         ImageStorage(
             endpoint=settings.s3_endpoint,
-            public_endpoint=settings.s3_public_endpoint,
+            public_path=settings.s3_public_path,
             access_key=settings.s3_access_key,
             secret_key=settings.s3_secret_key,
             bucket=settings.s3_bucket_images,

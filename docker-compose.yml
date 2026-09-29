@@ -59,7 +59,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
     volumes:
       - s3data:/data
-    # 8333 — S3 (на него подписываются ссылки для браузера), 23646 — веб-интерфейс администратора.
+    # 8333 — S3 для отладки с хоста (браузер ходит в хранилище через gateway, ADR-0017),
+    # 23646 — веб-интерфейс администратора.
     ports: ["8333:8333", "23646:23646"]
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:8333/healthz"]
@@ -208,6 +209,57 @@ services:
       retries: 12
       # Веса грузятся в память и прогреваются: на CPU это до минуты.
       start_period: 90s
+
+  # Резюме PDF-отчётов локальной моделью (ADR-0008): llama.cpp с Gemma 4 E4B — как на демо-стенде.
+  # Профиль llm включён в .env.example (COMPOSE_PROFILES), модель качает fetch_models.py.
+  # Своя модель или облачный API — LLM_* в .env, профиль тогда не нужен (README, раздел 3).
+  # Без видеокарты тот же образ считает на процессоре, только медленнее.
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda-b11096@sha256:0192ab2545efcbe79c240645e34abd8fffbe4813aedcef5a0e3a886ef6d6d82f
+    profiles: [llm]
+    restart: unless-stopped
+    # Режим рассуждений выключен: для пересказа готовых фактов он только тратит время.
+    command:
+      - -m
+      - /models/gemma-4-E4B-it-Q4_K_M.gguf
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - -c
+      - "8192"
+      - -ngl
+      - "99"
+      - --alias
+      - gemma-4-e4b
+      # Читать файл целиком, а не через mmap: на Docker Desktop под Windows mmap файла с диска
+      # хоста идёт страницами через файловый мост, и 5 ГБ грузятся дольше трёх минут, а так — 40 с.
+      - --load-mode
+      - none
+      - --chat-template-kwargs
+      - '{"enable_thinking":false}'
+    volumes:
+      - ./data/models/llm:/models:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    networks: [lct]
+
+  # Скрипты проекта (fetch_models, seed, e2e) без Python на хосте — нужен только Docker:
+  #   docker compose run --rm tools python scripts/seed.py
+  # Профиль не даёт ему подниматься с остальными; run запускает его и так.
+  tools:
+    build:
+      context: ./scripts
+    profiles: [tools]
+    environment:
+      GATEWAY_URL: http://gateway
+    volumes:
+      - .:/repo
+    networks: [lct]
 
   gateway:
     <<: *service-base

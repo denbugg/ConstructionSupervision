@@ -10,7 +10,7 @@ import { ErrorBox, Loading } from "@/shared/ui/QueryState";
 
 /**
  * Классы техники — только просмотр: класс добавляется записью в
- * `packages/contracts/equipment_classes.yaml` без правки кода (AGENTS.md, §12).
+ * `packages/contracts/equipment_classes.yaml` без правки кода (CONTRIBUTING.md, §12).
  */
 export function EquipmentClassesScreen() {
   const classes = useEquipmentClasses();

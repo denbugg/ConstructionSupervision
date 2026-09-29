@@ -1,9 +1,10 @@
-# Публикация образов в GitHub Container Registry.
+# Релиз: тег версии и latest на образы, которые CI уже собрал и проверил.
 #
-# Запускается вручную или по тегу, а не на каждый пуш: на хакатоне время
-# конвейера дороже, чем свежесть образов. Нужен смысл — забрать собранные
-# образы на демо-ноутбук командой docker compose pull, не собирая локально
-# образ с CUDA на 6–8 ГБ.
+# Ничего не собирает. CI публикует образ каждого коммита main с тегом sha-<коммит>, а здесь
+# на него ставятся v0.x.y и latest. Поэтому в релиз попадают ровно те байты, которые прошли
+# тесты, а сам релиз занимает секунды, а не десятки минут сборки образа с CUDA.
+# Запускается по тегу или вручную (тогда только latest) — на коммите, для которого CI
+# на main прошёл целиком: иначе релиз падает, а не публикует непроверенное.
 
 name: Release
 
@@ -14,60 +15,74 @@ on:
 
 jobs:
 
-  # Список сервисов не перечисляется руками: забытая строка здесь означала бы
-  # не опубликованный образ при зелёном конвейере — ошибку, о которой никто
-  # не узнает. Признак сервиса тот же, что в ci.yml: у него есть Dockerfile.
-  discover:
-    name: Найти сервисы
+  retag:
+    name: Теги релиза
     runs-on: ubuntu-latest
-    outputs:
-      buildable: ${{ steps.list.outputs.buildable }}
+    # Ожидание CI того же коммита: тег обычно ставят сразу после пуша в main.
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+      checks: read
     steps:
       - uses: actions/checkout@v4
+
+      # Список сервисов не перечисляется руками: забытая строка здесь означала бы
+      # не опубликованный образ при зелёном конвейере — ошибку, о которой никто
+      # не узнает. Признак сервиса тот же, что в ci.yml: у него есть Dockerfile.
       - id: list
+        name: Найти сервисы
         run: |
           buildable=$(for d in services/*/; do
             s=$(basename "$d")
             [ -f "$d/Dockerfile" ] && echo "$s"
-          done | jq -R . | jq -sc .)
-          echo "buildable=$buildable" >> "$GITHUB_OUTPUT"
+          done)
+          echo "services=$(echo $buildable)" >> "$GITHUB_OUTPUT"
+          echo "registry=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
           echo "публикуются: $buildable"
 
-  publish:
-    name: Публикация · ${{ matrix.service }}
-    needs: discover
-    if: needs.discover.outputs.buildable != '[]'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        service: ${{ fromJson(needs.discover.outputs.buildable) }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      # «Всё зелено» — итоговый статус ci.yml. Его ещё нет или он идёт — ждём; есть успешный —
+      # публикуем; все завершились иначе (упал, отменён новым пушем) — отказ.
+      - name: CI этого коммита зелёный
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          while true; do
+            state=$(gh api -X GET "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs" \
+              -f check_name="Всё зелено" \
+              --jq '[.check_runs[] | .conclusion // "pending"]
+                    | if index("success") then "success"
+                      elif length == 0 or index("pending") then "pending"
+                      else "failure" end')
+            case "$state" in
+              success) echo "CI на $GITHUB_SHA зелёный"; break ;;
+              failure) echo "::error::CI на $GITHUB_SHA не прошёл или отменён — релизить нечего"; exit 1 ;;
+              *) echo "CI на $GITHUB_SHA ещё не завершён, ждём"; sleep 30 ;;
+            esac
+          done
 
+      - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}/${{ matrix.service }}
-          tags: |
-            type=ref,event=tag
-            type=raw,value=latest
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: services/${{ matrix.service }}/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=${{ matrix.service }}
+      - name: Теги на образы sha-${{ github.sha }}
+        env:
+          REGISTRY: ${{ steps.list.outputs.registry }}
+          SERVICES: ${{ steps.list.outputs.services }}
+          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        run: |
+          # Сначала проверяем все образы: отсутствие одного (коммит собран не на main) не должно
+          # оставить релиз наполовину перетегированным.
+          for s in $SERVICES; do
+            docker buildx imagetools inspect "$REGISTRY/$s:sha-$GITHUB_SHA" > /dev/null \
+              || { echo "::error::нет образа $s:sha-$GITHUB_SHA — CI публикует только коммиты main"; exit 1; }
+          done
+          for s in $SERVICES; do
+            tags=(-t "$REGISTRY/$s:latest")
+            [ -n "$VERSION" ] && tags+=(-t "$REGISTRY/$s:$VERSION")
+            docker buildx imagetools create "${tags[@]}" "$REGISTRY/$s:sha-$GITHUB_SHA"
+            echo "$s: ${VERSION:+$VERSION и }latest"
+          done

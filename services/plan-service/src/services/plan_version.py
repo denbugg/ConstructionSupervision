@@ -1,4 +1,4 @@
-"""Общий шаг любой правки этапов, правил и календаря: plan_version растёт, analysis пересчитывает."""
+"""Общий шаг правки этапов, правил и календаря: plan_version растёт, analysis пересчитывает."""
 
 from collections.abc import Collection
 from uuid import UUID

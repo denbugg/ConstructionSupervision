@@ -1,4 +1,4 @@
-"""API PDF-отчётов: формирование, список, ссылка, деградация без site (T34c)."""
+"""API PDF-отчётов: формирование, список, ссылка, деградация без site."""
 
 from datetime import UTC, datetime
 
@@ -27,7 +27,7 @@ async def test_отчёт_по_умолчанию_за_неделю_до_дня_
     assert body["as_of"] == "2026-10-22T12:00:00Z"
     assert body["summary_generated_by"] == "TEMPLATE"
     assert body["evidence_images"] >= 1 and body["evidence_missing"] == 0
-    assert body["url"].startswith("http://localhost:8333/reports/")
+    assert body["url"].startswith("/storage/reports/")
     # Факты — за местные сутки периода, в UTC.
     _, since, until = upstream.site.calls[-1]
     assert (since, until) == (

@@ -138,7 +138,7 @@ def _norms(item: Mapping[str, Any]) -> Norms:
 
 
 def _source(block: Mapping[str, Any]) -> str:
-    """Число без ссылки на пункт документа не используется (AGENTS.md, правило 7)."""
+    """Число без ссылки на пункт документа не используется (CONTRIBUTING.md, правило 7)."""
     source = str(block.get("source") or "").strip()
     if not source:
         raise ValueError("source: у чисел нет ссылки на пункт и таблицу МРР")

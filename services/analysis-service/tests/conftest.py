@@ -246,7 +246,7 @@ class StubStorage:
         return found[0] if found else None
 
     async def presigned_url(self, key):
-        return f"http://localhost:8333/reports/{key}?X-Amz-Signature=stub"
+        return f"/storage/reports/{key}?X-Amz-Signature=stub"
 
 
 @pytest.fixture
@@ -261,7 +261,7 @@ async def seeded_rules(session_factory) -> None:
 
 @pytest.fixture
 def upstream():
-    """Заглушки plan и site: внешние сервисы в тестах не вызываются (AGENTS.md, раздел 10)."""
+    """Заглушки plan и site: внешние сервисы в тестах не вызываются (CONTRIBUTING.md, раздел 10)."""
     from datetime import UTC, datetime
     from types import SimpleNamespace
 

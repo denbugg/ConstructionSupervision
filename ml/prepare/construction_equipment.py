@@ -31,9 +31,22 @@ from ulima import CLASSES_FILE, ROOT, class_map, convert_labels, write_yaml
 ALIAS_PREFIX = "ce:"
 # Номер метки в файлах разметки → название на странице Kaggle.
 LABELS = [
-    "Dump truck", "Excavator", "Motor grader", "Roller", "Crane manipulator", "Gazelle",
-    "Forklift Standart", "Bucket loader Big", "Mixer", "Tanker", "Bulldozer",
-    "Cleaning equipment", "Truck", "Trailer", "Forklift Giraffe", "Bucket loader Standart",
+    "Dump truck",
+    "Excavator",
+    "Motor grader",
+    "Roller",
+    "Crane manipulator",
+    "Gazelle",
+    "Forklift Standart",
+    "Bucket loader Big",
+    "Mixer",
+    "Tanker",
+    "Bulldozer",
+    "Cleaning equipment",
+    "Truck",
+    "Trailer",
+    "Forklift Giraffe",
+    "Bucket loader Standart",
     "Autocran",
 ]
 # Под «Roller» катки вперемешку с мини-погрузчиками, под «Bulldozer» одна рамка мини-погрузчика.
@@ -78,21 +91,29 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     datasets = ROOT / "ml" / "datasets"
     parser.add_argument("--source", type=Path, default=datasets / "construction-equipment")
-    parser.add_argument("--out", type=Path, default=datasets / "external" / "construction-equipment")
+    parser.add_argument(
+        "--out", type=Path, default=datasets / "external" / "construction-equipment"
+    )
     parser.add_argument("--ulima", type=Path, default=datasets / "external" / "ulima")
     parser.add_argument("--combined-out", type=Path, default=datasets / "external" / "ce-ulima")
     # 10 с, а не больше: прореживание бьёт по редким классам сильнее, чем по частым
     # (при 30 с от 741 рамки манипуляторов в train остаётся 180, при 10 с — 300).
     parser.add_argument("--min-gap", type=float, default=10.0, help="секунд между кадрами камеры")
-    parser.add_argument("--val-share", type=int, default=12, help="доля пар «камера + день» в val, %%")
+    parser.add_argument(
+        "--val-share", type=int, default=12, help="доля пар «камера + день» в val, %%"
+    )
     parser.add_argument("--max-side", type=int, default=1280)
     parser.add_argument("--dry-run", action="store_true", help="только посчитать, ничего не писать")
     args = parser.parse_args()
 
     classes = yaml.safe_load(CLASSES_FILE.read_text(encoding="utf-8"))["equipment_classes"]
     kept_labels = [label for label in LABELS if label not in DROP_FRAMES | DROP_BOXES]
-    mapping = {LABELS.index(label): target for label, target in zip(
-        kept_labels, class_map(classes, kept_labels, ALIAS_PREFIX).values(), strict=True)}
+    mapping = {
+        LABELS.index(label): target
+        for label, target in zip(
+            kept_labels, class_map(classes, kept_labels, ALIAS_PREFIX).values(), strict=True
+        )
+    }
     drop_frames = {LABELS.index(label) for label in DROP_FRAMES}
     skip = {LABELS.index(label) for label in DROP_BOXES}
 
@@ -133,7 +154,9 @@ def main() -> None:
     present = [classes[i]["code"] for i in sorted(set(mapping.values()))]
     for split, counter in stats.items():
         rest = ", ".join(f"{code} {counter[code]}" for code in present)
-        print(f"{split:<5} пар {counter['пар камера+день']:>3}, кадров {counter['кадров']:>5}: {rest}")
+        print(
+            f"{split:<5} пар {counter['пар камера+день']:>3}, кадров {counter['кадров']:>5}: {rest}"
+        )
     if args.dry_run:
         return
 
@@ -158,8 +181,14 @@ def write_combined(out: Path, sources: list[Path], classes: list[dict]) -> None:
             for jpg in sorted((source / "images" / split).glob("*.jpg"))
         ]
         (out / f"{split}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    data = {"train": "train.txt", "val": "val.txt", "names": dict(enumerate(c["prompts"][0] for c in classes))}
-    (out / "data-world.yaml").write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    data = {
+        "train": "train.txt",
+        "val": "val.txt",
+        "names": dict(enumerate(c["prompts"][0] for c in classes)),
+    }
+    (out / "data-world.yaml").write_text(
+        yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":

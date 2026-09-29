@@ -13,12 +13,12 @@ NAME_analysis := analysis-service
 NAME_vision := vision-service
 NAME_gateway := gateway
 
-.PHONY: help up down dev restart logs ps health seed demo reset test lint fmt contracts migrate models backup e2e pull third-party
+.PHONY: help up down dev restart logs ps health seed demo reset test lint fmt contracts migrate models e2e pull third-party
 
 help: ## Показать список команд
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
-pull: .env ## Забрать опубликованные образы из ghcr (нужен docker login ghcr.io)
+pull: .env ## Забрать опубликованные образы из ghcr (пакеты публичные, вход не нужен)
 	$(COMPOSE) pull
 
 third-party: .env ## Сторонние образы (Postgres, S3, Redis) скачиваются и поднимаются — как в CI
@@ -84,9 +84,6 @@ models: ## Скачать веса моделей в data/models
 
 e2e: ## Сквозной сценарий на поднятом стеке
 	python scripts/e2e.py
-
-backup: ## Дамп баз и зеркало бакетов
-	python scripts/backup.py
 
 .env:
 	@echo "Нет .env — создаю из шаблона. Проверьте пароли и ключи перед продом."

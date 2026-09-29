@@ -350,6 +350,6 @@ def _unmarked_stages(ctx: Context, rule: DeviationRule, min_sessions: int) -> li
 
 @register("blind_area")
 def blind_area(ctx: Context, rule: DeviationRule) -> list[Finding]:
-    """D10: участок слепой `min_sessions` рабочих сессий подряд или у активного этапа нет участка."""
+    """D10: участок слепой `min_sessions` рабочих сессий подряд или у этапа в работе нет участка."""
     min_sessions = rule.params.get("min_sessions", 1)
     return _blind_areas(ctx, rule, min_sessions) + _unmarked_stages(ctx, rule, min_sessions)

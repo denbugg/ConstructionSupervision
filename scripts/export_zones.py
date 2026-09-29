@@ -13,7 +13,7 @@ import json
 import sys
 
 import httpx
-from _common import ROOT, load_env, use_utf8_output
+from _common import ROOT, gateway_url, load_env, use_utf8_output
 
 SEED = ROOT / "data" / "seed"
 CAMERAS = SEED / "cameras.json"
@@ -65,7 +65,7 @@ def main() -> int:
     args = parser.parse_args()
 
     env = load_env()
-    base = f"http://localhost:{env.get('GATEWAY_PORT', '8080')}/api/v1"
+    base = f"{gateway_url(env)}/api/v1"
     headers = {"X-API-Key": env.get("API_KEY", "")}
     try:
         with httpx.Client(base_url=base, headers=headers, timeout=30) as client:

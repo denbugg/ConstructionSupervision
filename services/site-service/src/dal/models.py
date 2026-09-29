@@ -52,7 +52,7 @@ def _null_or_in(column: str, values: tuple[str, ...]) -> str:
 
 
 class Base(DeclarativeBase):
-    # Всё время в базе — timestamptz (AGENTS.md, раздел 7), и модели обязаны это знать:
+    # Всё время в базе — timestamptz (CONTRIBUTING.md, раздел 7), и модели обязаны это знать:
     # иначе SQLAlchemy шлёт момент как наивный TIMESTAMP и теряет часовой пояс.
     type_annotation_map: ClassVar[dict] = {datetime: DateTime(timezone=True)}
 

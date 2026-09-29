@@ -1,0 +1,6 @@
+# Зависимости скриптов scripts/ (seed, e2e, demo, contracts): HTTP к стенду, справочники,
+# снимки. Ставятся в образ контейнера tools (scripts/Dockerfile) и в .venv хоста
+# (tools/requirements.txt подключает этот файл).
+httpx==0.28.1
+pyyaml==6.0.2
+pillow==11.0.0

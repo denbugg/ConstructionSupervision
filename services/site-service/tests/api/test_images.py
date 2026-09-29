@@ -164,13 +164,13 @@ async def test_карточка_со_ссылкой_для_браузера(clie
     card = (await client.get(f"{SITE}/images/{image_id}")).json()
     missing = await client.get(f"{SITE}/images/{OBJECT_ID}")
 
-    assert card["url"].startswith("http://localhost:8333/images/")
+    assert card["url"].startswith("/storage/images/")
     assert (card["width"], card["height"], card["detections"], card["stage"]) == (32, 24, [], None)
     assert (missing.status_code, missing.json()["error"]["code"]) == (404, "IMAGE_NOT_FOUND")
 
 
 async def test_карточка_для_сервиса_со_ссылкой_во_внутреннюю_сеть(client):
-    """Контракт 6: отчёт analysis скачивает снимок из сети Docker, localhost:8333 там не открыть."""
+    """Контракт 6: отчёт analysis скачивает снимок из сети Docker, где нет gateway."""
     uploaded = await _upload(client, [("cam-a/20261020_130000.jpg", _jpeg(130))])
     image_id = uploaded.json()["accepted"][0]["image_id"]
 

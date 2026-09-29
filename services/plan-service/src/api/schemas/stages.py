@@ -1,4 +1,4 @@
-"""DTO этапа графика. Поля совпадают с этапом в контракте «весь план» (interservice.md, раздел 1)."""
+"""DTO этапа графика. Поля совпадают с этапом в контракте «весь план» (interservice.md, р. 1)."""
 
 from datetime import date, datetime
 from uuid import UUID
@@ -59,7 +59,7 @@ class StageRead(BaseModel):
 
 
 class StageUpdate(BaseModel):
-    """Частичное изменение. Связи и критический путь здесь не правятся (T19)."""
+    """Частичное изменение. Связи здесь не правятся, критический путь пересчитывается."""
 
     plan_start: date | None = None
     plan_end: date | None = Field(default=None, description="Включительно")

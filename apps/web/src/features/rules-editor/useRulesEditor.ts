@@ -35,7 +35,7 @@ export function useSelectedStage(objectId: string) {
 /**
  * Сохранение правила и пересчёт. plan-service сам шлёт анализу сигнал «пересчитай»; прогон
  * с ожиданием схлопывается с ним и возвращается, когда выводы посчитаны уже по новому
- * правилу. Так лента обновляется без перезагрузки стека (T31).
+ * правилу. Так лента обновляется без перезагрузки стека.
  */
 export function useSaveRule(objectId: string, stage: StageRead) {
   const client = useQueryClient();

@@ -75,8 +75,9 @@ class StageObservationRead(BaseModel):
 
 class ImageDetail(ImageRead):
     url: str = Field(
-        description="Ссылка на S3_PUBLIC_ENDPOINT для браузера или на S3_ENDPOINT при "
-        "link=internal; живёт S3_PRESIGN_TTL_S"
+        description="Для браузера — путь без хоста под S3_PUBLIC_PATH (`/storage/images/…`), "
+        "открывается относительно адреса gateway; при link=internal — полная ссылка на "
+        "S3_ENDPOINT. Живёт S3_PRESIGN_TTL_S"
     )
     exif: dict
     quality: dict = Field(description="Яркость и размытость от vision-service")

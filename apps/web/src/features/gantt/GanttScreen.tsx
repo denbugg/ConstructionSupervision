@@ -10,6 +10,7 @@ import { SaveSummary } from "@/features/gantt/SaveSummary";
 import { StageCompletion } from "@/features/gantt/StageCompletion";
 import { useGantt, useSaveStage, useSelectedRow, type GanttRow, type Plan, type PlanStage } from "@/features/gantt/useGantt";
 import { isWorkday, workdaysIn, type Dates } from "@/features/gantt/workdays";
+import { hasGenerator, NO_GENERATOR_NOTE } from "@/features/objects/objectDraft";
 import { PlanSetupDialog, type PlanMode } from "@/features/objects/PlanSetupDialog";
 import { objectQuery } from "@/shared/api/queries";
 import { label, ru } from "@/shared/locale/ru";
@@ -42,6 +43,8 @@ export function GanttScreen() {
   const [zoom, setZoom] = useState<Zoom>("fit");
   const [draft, setDraft] = useState<Draft | null>(null);
   const [planMode, setPlanMode] = useState<PlanMode | null>(null);
+  // Пока объект не загружен, кнопку расчёта не прячем: диалог всё равно откроется только с объектом.
+  const generator = object.data ? hasGenerator(object.data.object_type) : true;
   const activeDraft = draft && draft.stageId === selected?.stage.id ? draft : null;
   // Черновик — только у выбранного этапа: переход к другому этапу его сбрасывает.
   const choose = (stageId: string) => {
@@ -91,17 +94,20 @@ export function GanttScreen() {
           title="У объекта нет графика"
           action={
             <>
-              <Button variant="primary" icon="sparkle" onClick={() => setPlanMode("generate")}>
-                Сгенерировать по МРР
-              </Button>
-              <Button icon="upload" onClick={() => setPlanMode("import")}>
+              {generator && (
+                <Button variant="primary" icon="sparkle" onClick={() => setPlanMode("generate")}>
+                  Сгенерировать по МРР
+                </Button>
+              )}
+              <Button variant={generator ? "secondary" : "primary"} icon="upload" onClick={() => setPlanMode("import")}>
                 Импортировать CSV / XLSX
               </Button>
             </>
           }
         >
-          Без графика не с чем сверять факт. Сгенерируйте его по нормам МРР-3.2.81-12 из этажности и
-          площади или загрузите из файла — этапы придут вместе с правилами техники.
+          {generator
+            ? "Без графика не с чем сверять факт. Сгенерируйте его по нормам МРР-3.2.81-12 из этажности и площади или загрузите из файла — этапы придут вместе с правилами техники."
+            : `Без графика не с чем сверять факт. ${NO_GENERATOR_NOTE}`}
         </Empty>
       )}
       {progress.data === null && rows.length > 0 && (

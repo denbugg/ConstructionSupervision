@@ -1,14 +1,14 @@
 """Объектное хранилище снимков (S3-совместимое). Единственное место с кодом S3.
 
 Клиент `minio` синхронный, поэтому каждый вызов уходит в пул потоков: обработчик запроса
-не блокирует цикл событий (AGENTS.md, раздел 8). Ссылки для браузера подписываются вторым
-клиентом на публичный адрес: подпись S3 привязана к хосту, и `s3:8333` браузер не откроет.
+не блокирует цикл событий (CONTRIBUTING.md, раздел 8). Ссылка для браузера — относительный путь
+на gateway (ADR-0017): подписана на внутренний адрес, gateway отдаёт её из хранилища.
 """
 
 import asyncio
 import io
 from datetime import timedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
 
 from lct_common import UpstreamError, get_logger
 from minio import Minio
@@ -40,14 +40,14 @@ class ImageStorage:
         self,
         *,
         endpoint: str,
-        public_endpoint: str,
+        public_path: str,
         access_key: str,
         secret_key: str,
         bucket: str,
         presign_ttl_s: int,
     ) -> None:
         self._client = _client(endpoint, access_key, secret_key)
-        self._public = _client(public_endpoint, access_key, secret_key)
+        self._public_path = public_path.rstrip("/")
         self._bucket = bucket
         self._ttl = timedelta(seconds=presign_ttl_s)
 
@@ -70,10 +70,14 @@ class ImageStorage:
         )
 
     async def presigned_url(self, key: str) -> str:
-        """Ссылка для браузера на публичный адрес хранилища, живёт S3_PRESIGN_TTL_S."""
-        return await self._call(
-            lambda: self._public.presigned_get_object(self._bucket, key, expires=self._ttl)
-        )
+        """Ссылка для браузера: путь под S3_PUBLIC_PATH на том же адресе, что и интерфейс.
+
+        Хост в ссылку не попадает: браузер откроет её по тому адресу, по которому пришёл
+        (localhost, локальная сеть, туннель). Подпись сделана на внутренний адрес, и gateway
+        передаёт хранилищу именно его в `Host`, поэтому подпись сходится.
+        """
+        signed = urlsplit(await self.internal_url(key))
+        return f"{self._public_path}{signed.path}?{signed.query}"
 
     async def internal_url(self, key: str) -> str:
         """Ссылка для vision-service внутри сети Docker."""

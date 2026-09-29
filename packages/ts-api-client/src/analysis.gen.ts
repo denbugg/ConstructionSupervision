@@ -684,7 +684,7 @@ export interface components {
             summary_generated_by: string;
             /**
              * Url
-             * @description Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S
+             * @description Presigned-ссылка: путь без хоста под S3_PUBLIC_PATH (`/storage/reports/…`), открывается относительно адреса gateway; живёт S3_PRESIGN_TTL_S
              */
             url: string;
         };
@@ -725,7 +725,7 @@ export interface components {
             size_bytes: number;
             /**
              * Url
-             * @description Presigned-ссылка на S3_PUBLIC_ENDPOINT; живёт S3_PRESIGN_TTL_S
+             * @description Presigned-ссылка: путь без хоста под S3_PUBLIC_PATH (`/storage/reports/…`), открывается относительно адреса gateway; живёт S3_PRESIGN_TTL_S
              */
             url: string;
         };

@@ -6,10 +6,9 @@
 # Сервисы, их тесты, обучение и оценка моделей (torch, Ultralytics) живут в образах —
 # сюда они не попадают. Глобальный Python для проекта не нужен.
 
-# scripts/ (seed, e2e, demo, contracts, health) и ml/prepare — HTTP к стенду, справочники, снимки
-httpx==0.28.1
-pyyaml==6.0.2
-pillow==11.0.0
+# scripts/ (seed, e2e, demo, contracts, health) и ml/prepare — HTTP к стенду, справочники, снимки.
+# Список общий с контейнером tools: путь в -r — от этого файла.
+-r ../scripts/requirements.txt
 
 # Линт и формат: та же версия, что в CI (tools/README.md)
 ruff==0.16.8

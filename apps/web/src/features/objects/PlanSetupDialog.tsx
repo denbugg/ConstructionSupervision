@@ -4,7 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 import { formatPlanDate } from "@/entities/format";
 import { TepFields } from "@/features/objects/ObjectFields";
-import { draftFromObject, draftProblems, tepBody, type ObjectDraft } from "@/features/objects/objectDraft";
+import {
+  draftFromObject,
+  draftProblems,
+  hasGenerator,
+  NO_GENERATOR_NOTE,
+  tepBody,
+  type ObjectDraft,
+} from "@/features/objects/objectDraft";
 import {
   generatePlan,
   importPlan,
@@ -44,7 +51,9 @@ export function PlanSetupDialog({
   onClose: () => void;
   initialMode?: PlanMode;
 }) {
-  const [mode, setMode] = useState<PlanMode>(initialMode);
+  // Без норм для типа генерация заведомо вернёт NORMS_NOT_AVAILABLE — сразу открываем импорт.
+  const generator = hasGenerator(object.object_type);
+  const [mode, setMode] = useState<PlanMode>(generator ? initialMode : "import");
   const [draft, setDraft] = useState<ObjectDraft>(() => draftFromObject(object));
   const [file, setFile] = useState<File | null>(null);
   const [tried, setTried] = useState(false);
@@ -124,17 +133,24 @@ export function PlanSetupDialog({
       }
     >
       <div className="space-y-5">
-        <Segmented
-          value={mode}
-          onChange={(value) => {
-            setMode(value);
-            run.reset();
-          }}
-          options={[
-            { value: "generate", label: "По нормам МРР" },
-            { value: "import", label: "Из файла CSV / XLSX" },
-          ]}
-        />
+        {generator ? (
+          <Segmented
+            value={mode}
+            onChange={(value) => {
+              setMode(value);
+              run.reset();
+            }}
+            options={[
+              { value: "generate", label: "По нормам МРР" },
+              { value: "import", label: "Из файла CSV / XLSX" },
+            ]}
+          />
+        ) : (
+          <div className="flex gap-3 rounded-xl bg-sky-50 p-3.5 text-sm text-sky-900 ring-1 ring-sky-200">
+            <Icon name="info" size={17} className="mt-0.5 shrink-0" />
+            <p>{NO_GENERATOR_NOTE}</p>
+          </div>
+        )}
 
         {replace && (
           <div className="flex gap-3 rounded-xl bg-amber-50 p-3.5 text-sm text-amber-900 ring-1 ring-amber-200">

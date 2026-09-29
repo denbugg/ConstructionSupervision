@@ -1,4 +1,4 @@
-"""API классов техники: список совпадает с equipment_classes.yaml (T17)."""
+"""API классов техники: список совпадает с equipment_classes.yaml."""
 
 import yaml
 

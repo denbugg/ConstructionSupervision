@@ -27,7 +27,7 @@ flowchart LR
 ## 3. API
 
 Префикс: `/api/v1/vision`. Контракт — [packages/contracts/interservice.md](../../packages/contracts/interservice.md),
-раздел 3. Что уже реализовано, видно по [docs/board.md](../../docs/board.md).
+раздел 3.
 
 | Метод | Путь | Описание |
 | :--- | :--- | :--- |
@@ -84,8 +84,8 @@ flowchart LR
   `yolov8s-worldv2-ce-ulima-v1.pt` (ещё и Construction Equipment): 0,81 на тесте Лимы. На снимках
   организаторов он находит каждую седьмую машину (metrics.md, §2). Дообучается сам
   YOLO-World ([`ml/`](../../ml/README.md)), поэтому классы по-прежнему задаются промптами, а
-  веса подставляются переменной `VISION_DET_WEIGHTS` без правки кода. По умолчанию в
-  `.env.example` остаются zero-shot веса: дообученные не скачиваются `fetch_models.py`.
+  веса подставляются переменной `VISION_DET_WEIGHTS` без правки кода. `ce-ulima-v1` скачивает
+  `fetch_models.py` из релиза `demo-data-v1`, он же стоит в `.env.example`.
 
 ## 5. Конфигурация
 
@@ -125,7 +125,7 @@ flowchart LR
 (`MODEL_NOT_LOADED`) ждут. Если загрузка упала, сервис остаётся живым и не готовым, причина —
 в логе `vision.models_failed`.
 
-Код устроен как у остальных сервисов (AGENTS.md, раздел 3) плюс слой `src/models/`: адаптеры
+Код устроен как у остальных сервисов (CONTRIBUTING.md, раздел 3) плюс слой `src/models/`: адаптеры
 к Ultralytics и OpenCLIP. torch и модели импортируются только там, поэтому тесты с заглушками
 идут без них, а тяжёлые зависимости — в `requirements-ml.txt`, который ставится только в образ.
 

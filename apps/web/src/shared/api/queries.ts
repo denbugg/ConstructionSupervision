@@ -89,7 +89,7 @@ export function imageQuery(imageId: string) {
   });
 }
 
-/** Русские названия классов техники из plan: в коде интерфейса классов нет (AGENTS.md, §2). */
+/** Русские названия классов техники из plan: в коде интерфейса классов нет (CONTRIBUTING.md, §2). */
 export const equipmentClassesQuery = queryOptions({
   queryKey: ["plan", "equipment-classes"],
   queryFn: ({ signal }) =>

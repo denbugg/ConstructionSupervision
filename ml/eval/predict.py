@@ -1,6 +1,6 @@
-"""Рамки open-vocabulary детектора на размеченной выборке → JSON для score.py и cascade.py.
+"""Рамки детектора YOLO-World на размеченной выборке → JSON для score.py.
 
-    python ml/eval/predict.py --weights /models/yoloe-26m-seg.pt \
+    python ml/eval/predict.py --weights /models/yolov8s-worldv2-ce-ulima-v1.pt \
         --data ml/datasets/external/lct-test --prompts all
 
 Запускается в образе vision-service (ml/README.md, «Обучение и оценка»). Словарь:
@@ -36,14 +36,10 @@ def vocabulary(mode: str) -> list[tuple[str, str]]:
 
 
 def load_model(weights: str, prompts: list[str]):
-    from ultralytics import YOLOE, YOLOWorld
+    from ultralytics import YOLOWorld
 
-    if "yoloe" in Path(weights).name:
-        model = YOLOE(weights)
-        model.set_classes(prompts, model.get_text_pe(prompts))
-    else:
-        model = YOLOWorld(weights)
-        model.set_classes(prompts)
+    model = YOLOWorld(weights)
+    model.set_classes(prompts)
     return model
 
 

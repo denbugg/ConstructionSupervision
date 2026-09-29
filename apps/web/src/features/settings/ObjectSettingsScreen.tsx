@@ -5,7 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatMoment, formatPlanDate } from "@/entities/format";
 import { planQuery } from "@/features/gantt/useGantt";
 import { RequisiteFields, TepFields } from "@/features/objects/ObjectFields";
-import { draftFromObject, draftProblems, type Lifecycle, type ObjectDraft } from "@/features/objects/objectDraft";
+import {
+  draftFromObject,
+  draftProblems,
+  hasGenerator,
+  NO_GENERATOR_NOTE,
+  type Lifecycle,
+  type ObjectDraft,
+} from "@/features/objects/objectDraft";
 import { PlanSetupDialog, type PlanMode } from "@/features/objects/PlanSetupDialog";
 import { useObjectActions } from "@/features/objects/useObjectActions";
 import { useUpdateObject } from "@/features/objects/useObjects";
@@ -55,10 +62,12 @@ function RequisitesPanel({ object }: { object: ObjectRead }) {
           </select>
         </Field>
       )}
-      <div className="space-y-2.5">
-        <p className="text-[13px] font-medium text-ink/85">Параметры объекта (ТЭП) — для генератора графика</p>
-        <TepFields tep={draft.tep} problems={problems} onChange={(tep) => setDraft({ ...draft, tep })} />
-      </div>
+      {hasGenerator(draft.objectType) && (
+        <div className="space-y-2.5">
+          <p className="text-[13px] font-medium text-ink/85">Параметры объекта (ТЭП) — для генератора графика</p>
+          <TepFields tep={draft.tep} problems={problems} onChange={(tep) => setDraft({ ...draft, tep })} />
+        </div>
+      )}
       {update.isError && <ErrorBox error={update.error} />}
       <div className="flex flex-wrap items-center gap-2 border-t border-ink/[0.07] pt-4">
         <Button
@@ -87,6 +96,7 @@ function SchedulePanel({ object }: { object: ObjectRead }) {
   const base = `/objects/${object.id}`;
   const first = stages.reduce<string | null>((min, s) => (min == null || s.plan_start < min ? s.plan_start : min), null);
   const last = stages.reduce<string | null>((max, s) => (max == null || s.plan_end > max ? s.plan_end : max), null);
+  const generator = hasGenerator(object.object_type);
 
   return (
     <Panel
@@ -107,8 +117,9 @@ function SchedulePanel({ object }: { object: ObjectRead }) {
         <>
           {stages.length === 0 ? (
             <p className="text-sm text-muted">
-              Графика нет: без него не с чем сверять факт. Постройте его по нормам МРР-3.2.81-12 из
-              этажности и площади или загрузите из файла.
+              {generator
+                ? "Графика нет: без него не с чем сверять факт. Постройте его по нормам МРР-3.2.81-12 из этажности и площади или загрузите из файла."
+                : "Графика нет: без него не с чем сверять факт. Загрузите его из файла."}
             </p>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -118,11 +129,14 @@ function SchedulePanel({ object }: { object: ObjectRead }) {
               <Fact label="Календарь · версия" value={`${plan.data.calendar.code} · v${plan.data.plan_version}`} />
             </div>
           )}
+          {!generator && <p className="text-sm text-muted">{NO_GENERATOR_NOTE}</p>}
           <div className="flex flex-wrap gap-2">
-            <Button variant={stages.length === 0 ? "primary" : "secondary"} icon="sparkle" onClick={() => setMode("generate")}>
-              {stages.length === 0 ? "Сгенерировать по МРР" : "Перестроить по МРР"}
-            </Button>
-            <Button icon="upload" onClick={() => setMode("import")}>
+            {generator && (
+              <Button variant={stages.length === 0 ? "primary" : "secondary"} icon="sparkle" onClick={() => setMode("generate")}>
+                {stages.length === 0 ? "Сгенерировать по МРР" : "Перестроить по МРР"}
+              </Button>
+            )}
+            <Button variant={!generator && stages.length === 0 ? "primary" : "secondary"} icon="upload" onClick={() => setMode("import")}>
               Импортировать из файла
             </Button>
             {stages.length > 0 && (

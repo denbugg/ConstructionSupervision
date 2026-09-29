@@ -109,7 +109,11 @@ def test_цикл_в_связях_отклоняется():
 
 @pytest.mark.parametrize(
     ("link", "message"),
-    [(Link(C, "FS"), "нет в графике"), (Link(A, "XX"), "тип связи"), (Link(B, "FS"), "сам от себя")],
+    [
+        (Link(C, "FS"), "нет в графике"),
+        (Link(A, "XX"), "тип связи"),
+        (Link(B, "FS"), "сам от себя"),
+    ],
 )
 def test_испорченная_связь_отклоняется(link, message):
     with pytest.raises(CpmError, match=message):

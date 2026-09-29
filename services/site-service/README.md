@@ -38,7 +38,6 @@ flowchart LR
 
 Префикс: `/api/v1/site`. Межсервисный контракт «факты за период» —
 [packages/contracts/interservice.md](../../packages/contracts/interservice.md), раздел 2.
-Что уже реализовано, видно по [docs/board.md](../../docs/board.md).
 
 ### Камеры и зоны
 
@@ -59,7 +58,7 @@ flowchart LR
 | `POST` | `/images` | Пакетная загрузка (multipart: `files` до 200 штук, `object_id`, необязательно `camera_code` и `captured_at`). Частичный успех `202`: `{accepted, rejected}` |
 | `POST` | `/images/import` | Импорт из папки `IMPORT_DIR/<path>` (`{object_id, path}`): первая подпапка = код камеры, скрытые файлы пропускаются. Ответ тот же, что у пакета |
 | `GET` | `/images` | Список с фильтрами `object_id`, `camera_id`, `from`, `to` (полуинтервал по времени съёмки), `status`; по времени съёмки, снимки без времени — в конце |
-| `GET` | `/images/{id}` | Метаданные, EXIF, качество кадра, presigned-ссылка для браузера (`S3_PUBLIC_ENDPOINT`), детекции с рамками, точкой контакта и зоной, стадия по снимку. `?link=internal` — ссылка на `S3_ENDPOINT` для других сервисов: так снимки берёт PDF-отчёт analysis (interservice.md, контракт 6) |
+| `GET` | `/images/{id}` | Метаданные, EXIF, качество кадра, presigned-ссылка для браузера (путь `/storage/images/…` на gateway), детекции с рамками, точкой контакта и зоной, стадия по снимку. `?link=internal` — ссылка на `S3_ENDPOINT` для других сервисов: так снимки берёт PDF-отчёт analysis (interservice.md, контракт 6) |
 | `PATCH` | `/images/{id}` | `{captured_at}` — время съёмки вручную, только для статуса `NEEDS_TIME`: снимок получает окно, статус `PENDING` и источник `MANUAL` |
 | `POST` | `/images/reanalyze` | `{object_id, camera_id?}` → `202 {object_id, images}`: повторное распознавание после смены модели или порога. Снимки `ANALYZED` и `FAILED` снова получают `PENDING` и идут в очередь |
 
@@ -164,8 +163,8 @@ POST /images/reanalyze
 | `SWEEP_INTERVAL_S` | `30` | Проход воркера по базе; делит минуту нацело |
 | `STALE_PROCESSING_MINUTES` | `10` | Снимок в `PROCESSING` дольше — воркер упал, снимок берётся заново |
 | `REAPPLY_TIMEOUT_S` | `600` | Предел задачи `reapply_zones`: пересчёт фактов всех окон объекта после правки зон |
-| `S3_ENDPOINT` | `http://s3:8333` | S3-хранилище внутри сети: загрузка файлов и ссылки для vision |
-| `S3_PUBLIC_ENDPOINT` | `http://localhost:8333` | Адрес хранилища, доступный браузеру: на него подписываются ссылки для интерфейса |
+| `S3_ENDPOINT` | `http://s3:8333` | S3-хранилище внутри сети: загрузка файлов и подпись всех ссылок |
+| `S3_PUBLIC_PATH` | `/storage` | Путь на gateway, под которым браузер получает ссылку на снимок: `/storage/images/…` без хоста ([ADR-0017](../../docs/decisions/0017-storage-through-gateway.md)) |
 | `S3_*` | см. [runbook](../../docs/runbook.md) | Ключи, бакеты, срок жизни ссылок |
 | `CONTRACTS_DIR` | `/contracts` | Каталог с `enums.yaml` |
 | `SESSION_WINDOW_MINUTES` | `30` | Длина окна сессии; должна делить сутки нацело |

@@ -41,7 +41,7 @@ def _in(column: str, values: tuple[str, ...]) -> str:
 
 
 class Base(DeclarativeBase):
-    # Всё время в базе — timestamptz (AGENTS.md, раздел 7), и модели обязаны это знать:
+    # Всё время в базе — timestamptz (CONTRIBUTING.md, раздел 7), и модели обязаны это знать:
     # иначе SQLAlchemy шлёт момент как наивный TIMESTAMP и теряет часовой пояс.
     type_annotation_map: ClassVar[dict] = {datetime: DateTime(timezone=True)}
 
@@ -89,7 +89,7 @@ class Deviation(Base, TimestampMixin):
     """Отклонение: то, что видит пользователь, и то, за что нас оценивают.
 
     Строка бессмысленна без `facts` и `evidence`: число без объяснения мы
-    не показываем (AGENTS.md, правило 4).
+    не показываем (CONTRIBUTING.md, правило 4).
     """
 
     __tablename__ = "deviation"
@@ -151,7 +151,7 @@ class DeviationRule(Base, TimestampMixin):
     """Настройка правила D1–D10: пороги и текст живут в данных, а не в коде.
 
     Новый тип отклонения с существующим предикатом добавляется строкой в эту
-    таблицу — без правки кода и без развёртывания (AGENTS.md, раздел 12).
+    таблицу — без правки кода и без развёртывания (CONTRIBUTING.md, раздел 12).
     """
 
     __tablename__ = "deviation_rule"
