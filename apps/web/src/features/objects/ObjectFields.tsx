@@ -25,7 +25,7 @@ export function RequisiteFields({
           maxLength={300}
         />
       </Field>
-      <Field label="Тип объекта" hint="По типу выбираются нормы МРР и шаблон этапов">
+      <Field label="Тип объекта" hint="От типа зависят параметры ТЭП и расчёт графика по МРР">
         <select
           value={draft.objectType}
           onChange={(e) => onChange({ ...draft, objectType: e.target.value as ObjectType })}
@@ -67,7 +67,8 @@ const TEP_FIELDS: { key: keyof TepDraft; label: string; hint: string }[] = [
 ];
 
 /**
- * Параметры генератора графика. Допустимые значения сменности знает только plan-service:
+ * Параметры генератора графика — показывать только для типа с генератором (`hasGenerator`):
+ * больше их никто не читает. Допустимые значения сменности знает только plan-service:
  * неподходящее значение он отклонит с перечнем допустимых, экран покажет его ответ.
  */
 export function TepFields({

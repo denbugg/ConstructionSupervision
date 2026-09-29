@@ -27,6 +27,22 @@ export const TEP_KEYS = ["floors", "total_area", "sections", "piles", "shifts"] 
 
 const DEFAULT_TYPE: ObjectType = "RESIDENTIAL_MONOLITH";
 
+/**
+ * Типы, для которых plan-service умеет строить график по МРР: нормы есть только для
+ * монолитного жилого дома (services/plan-service/data/mrr_norms.json). Для остальных
+ * генерация (`POST /objects/{id}/plan/generate`) отвечает NORMS_NOT_AVAILABLE — график только из файла.
+ * API перечня не отдаёт, поэтому список повторён здесь; появятся нормы — дополнить.
+ */
+const GENERATOR_TYPES: readonly ObjectType[] = ["RESIDENTIAL_MONOLITH"];
+
+export function hasGenerator(type: ObjectType): boolean {
+  return GENERATOR_TYPES.includes(type);
+}
+
+/** Подпись там, где расчёт по МРР недоступен: вместо кнопки, которая заведомо упадёт. */
+export const NO_GENERATOR_NOTE =
+  "Автоматический расчёт графика — только для монолитного жилого дома. Для этого типа загрузите график из файла.";
+
 export function draftFromObject(object?: ObjectRead): ObjectDraft {
   return {
     name: object?.name ?? "",
@@ -64,11 +80,13 @@ export type DraftProblems = Partial<Record<"name" | "planStart" | keyof TepDraft
 /**
  * Что мешает отправить форму. `forGenerator` — график будут строить по нормам: тогда нужны
  * дата начала, этажность и площадь (без них plan-service ответит GENERATOR_PARAMS_INVALID).
+ * У типа без генератора поля ТЭП скрыты — их не проверяем, иначе невидимая ошибка держала бы форму.
  */
 export function draftProblems(draft: ObjectDraft, forGenerator: boolean): DraftProblems {
   const problems: DraftProblems = {};
   if (!draft.name.trim()) problems.name = "Укажите название объекта";
   if (forGenerator && !draft.planStart) problems.planStart = "Нужна для расчёта дат этапов";
+  if (!hasGenerator(draft.objectType)) return problems;
   for (const key of TEP_KEYS) {
     const value = parseNumber(draft.tep[key]);
     if (value != null && (Number.isNaN(value) || value < 0)) problems[key] = "Нужно число не меньше нуля";
@@ -100,8 +118,9 @@ export function createBody(draft: ObjectDraft): PlanSchema<"ObjectCreate"> {
     address: draft.address.trim() || null,
     object_type: draft.objectType,
     plan_start: draft.planStart || null,
-    // В схеме `tep` — словарь без описания значений: числа кладутся как есть.
-    tep: tepBody(draft.tep) as PlanSchema<"ObjectCreate">["tep"],
+    // В схеме `tep` — словарь без описания значений: числа кладутся как есть. Скрытые для
+    // этого типа поля не отправляем: этажность дороги ничего не значит и никем не читается.
+    tep: (hasGenerator(draft.objectType) ? tepBody(draft.tep) : {}) as PlanSchema<"ObjectCreate">["tep"],
   };
 }
 
@@ -114,7 +133,9 @@ export function updateBody(draft: ObjectDraft, object: ObjectRead): PlanSchema<"
   const name = draft.name.trim();
   const address = draft.address.trim() || null;
   const planStart = draft.planStart || null;
-  const tep = tepBody(draft.tep, object.tep as Record<string, unknown>);
+  const base = object.tep as Record<string, unknown>;
+  // Тип без генератора: поля ТЭП скрыты, прежние значения объекта не трогаем — вернут тип, вернутся и они.
+  const tep = hasGenerator(draft.objectType) ? tepBody(draft.tep, base) : base;
   if (name !== object.name) body.name = name;
   if (address !== object.address) body.address = address;
   if (draft.objectType !== object.object_type) body.object_type = draft.objectType;
