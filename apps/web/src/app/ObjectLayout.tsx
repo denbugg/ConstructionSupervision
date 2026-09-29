@@ -8,6 +8,7 @@ import { objectStatusTone } from "@/entities/status";
 import { useRecompute } from "@/features/dashboard/useDashboard";
 import { planQuery } from "@/features/gantt/useGantt";
 import { EditObjectDialog } from "@/features/objects/ObjectFormDialog";
+import { hasGenerator } from "@/features/objects/objectDraft";
 import { PlanSetupDialog } from "@/features/objects/PlanSetupDialog";
 import { useObjectActions } from "@/features/objects/useObjectActions";
 import { objectQuery, statusQuery, type ObjectRead } from "@/shared/api/queries";
@@ -126,7 +127,7 @@ function ObjectBar({ object }: { object: ObjectRead }) {
               {
                 label: (plan.data?.stages.length ?? 0) > 0 ? "Перестроить график" : "Построить график",
                 icon: "gantt",
-                hint: "по нормам МРР или из файла",
+                hint: hasGenerator(object.object_type) ? "по нормам МРР или из файла" : "из файла CSV/XLSX",
                 onSelect: () => setPlanning(true),
               },
               { label: "Сформировать отчёт", icon: "report", onSelect: () => navigate(`${base}/reports`) },

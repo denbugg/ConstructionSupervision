@@ -13,6 +13,7 @@ import {
   useTopDeviations,
   type SetupStep,
 } from "@/features/dashboard/useDashboard";
+import { hasGenerator } from "@/features/objects/objectDraft";
 import { PlanSetupDialog } from "@/features/objects/PlanSetupDialog";
 import { camerasQuery, type ObjectRead, type ObjectStatus } from "@/shared/api/queries";
 import { label, ru } from "@/shared/locale/ru";
@@ -45,7 +46,7 @@ export function SetupChecklist({ object }: { object: ObjectRead }) {
     const variant = key === next ? "primary" : "secondary";
     switch (key) {
       case "plan":
-        return <Button size="sm" variant={variant} icon="sparkle" onClick={() => setPlanning(true)}>Построить график</Button>;
+        return <Button size="sm" variant={variant} icon={hasGenerator(object.object_type) ? "sparkle" : "upload"} onClick={() => setPlanning(true)}>{hasGenerator(object.object_type) ? "Построить график" : "Загрузить график"}</Button>;
       case "images":
         return <ButtonLink size="sm" variant={variant} icon="upload" to={`${base}/upload`}>Загрузить снимки</ButtonLink>;
       case "zones":
@@ -93,7 +94,7 @@ export function SetupChecklist({ object }: { object: ObjectRead }) {
               </span>
               <div>
                 <p className={`text-sm font-medium ${step.done ? "text-muted line-through" : ""}`}>{STEP_TEXT[step.key].title}</p>
-                <p className="text-xs text-muted">{STEP_TEXT[step.key].text}</p>
+                <p className="text-xs text-muted">{step.key === "plan" && !hasGenerator(object.object_type) ? "Этапы и сроки — из файла CSV/XLSX" : STEP_TEXT[step.key].text}</p>
               </div>
             </div>
             {!step.done && <div className="pl-8">{action(step.key)}</div>}
