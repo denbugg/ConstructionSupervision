@@ -1,5 +1,6 @@
 """Скрипт генерации сопроводительной документации в формате PDF (по разделу 5 ТЗ)."""
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -186,10 +187,14 @@ html_path.write_text(html_template, encoding="utf-8")
 if pdf_tmp.exists():
     pdf_tmp.unlink()
 
-edge_exe = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+# Браузер для печати в PDF: по умолчанию Edge на Windows, иначе путь из PDF_BROWSER.
+edge_exe = os.environ.get(
+    "PDF_BROWSER", r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+)
 cmd = [
     edge_exe,
     "--headless",
+    "--no-sandbox",
     "--disable-gpu",
     "--no-pdf-header-footer",
     f"--print-to-pdf={pdf_tmp.resolve()}",
